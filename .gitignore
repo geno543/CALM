@@ -1,0 +1,44 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# ── Secrets — NEVER commit these ─────────────────────────────────────────────
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+*.env
+
+# ── Runtime data (local only) ─────────────────────────────────────────────────
+backend/sessions.json
+
+# ── Node ──────────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# NOTE: deploy/db_*/ ChromaDB vector stores ARE committed intentionally
+# (avoids slow rebuild on every Railway restart)

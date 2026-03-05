@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Cairo:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+@import 'katex/dist/katex.min.css';
+
+@theme {
+  --color-ink:        #0D1117;
+  --color-surface:    #161B22;
+  --color-surface-2:  #1C2333;
+  --color-border:     #30363D;
+  --color-border-2:   #21262D;
+  --color-primary:    #58A6FF;
+  --color-primary-dim:#1F3B5E;
+  --color-accent:     #3DDC97;
+  --color-accent-dim: #0D3D2A;
+  --color-warning:    #F0A04B;
+  --color-danger:     #F85149;
+  --color-muted:      #8B949E;
+  --color-subtle:     #484F58;
+  --color-text:       #E6EDF3;
+  --color-text-2:     #B1BAC4;
+
+  --font-sans:  'Inter', system-ui, sans-serif;
+  --font-arabic:'Cairo', 'Inter', system-ui, sans-serif;
+  --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+
+  --radius-sm:  0.375rem;
+  --radius-md:  0.625rem;
+  --radius-lg:  1rem;
+  --radius-xl:  1.5rem;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  min-height: 100dvh;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Applied only on the chat page to prevent outer scroll */
+body.chat-page {
+  overflow: hidden;
+  height: 100dvh;
+}
+
+html[dir="rtl"] body { font-family: var(--font-arabic); }
+
+/* ── Scrollbars ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-subtle); }
+
+/* ── Focus / selection ───────────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+::selection { background-color: var(--color-primary-dim); color: var(--color-primary); }
+
+/* ── KaTeX overrides (dark mode) ─────────────────────────────────────────── */
+.katex { color: var(--color-text) !important; font-size: 1em !important; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+
+/* ── Code ────────────────────────────────────────────────────────────────── */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+  color: var(--color-primary);
+}
+pre {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+pre code { background: transparent; border: none; padding: 0; color: var(--color-text); }
+
+/* ── Prose (markdown messages) ───────────────────────────────────────────── */
+.prose-calm { color: var(--color-text); line-height: 1.7; }
+.prose-calm h1, .prose-calm h2, .prose-calm h3 { color: var(--color-text); font-weight: 600; margin: 1.1em 0 0.4em; }
+.prose-calm h1 { font-size: 1.2em; }
+.prose-calm h2 { font-size: 1.08em; }
+.prose-calm h3 { font-size: 1.0em; }
+.prose-calm p  { margin: 0.55em 0; }
+.prose-calm ul, .prose-calm ol { padding-left: 1.4em; margin: 0.5em 0; }
+.prose-calm li { margin: 0.2em 0; }
+.prose-calm blockquote {
+  border-left: 3px solid var(--color-primary);
+  margin: 0.75em 0; padding: 0.4em 1em;
+  color: var(--color-text-2);
+  background: var(--color-primary-dim);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.prose-calm strong { color: var(--color-text); font-weight: 600; }
+.prose-calm em     { color: var(--color-text-2); }
+.prose-calm hr     { border-color: var(--color-border); margin: 1em 0; }
+.prose-calm a      { color: var(--color-primary); }
+.prose-calm table  { width: 100%; border-collapse: collapse; }
+.prose-calm th, .prose-calm td { border: 1px solid var(--color-border); padding: 0.4em 0.75em; }
+.prose-calm th { background: var(--color-surface-2); color: var(--color-text-2); font-weight: 500; }
