@@ -83,7 +83,8 @@ function ChapterBar({ label, mastery, active }: { label: string; mastery: number
 export default function MasteryPanel() {
   const { state } = useStudentStore();
   const { isAr }  = useLang();
-  const { bkt, level, level_label, chapter_mastery, current_chapter, streak_days, total_hints } = state;
+  const { bkt: bktRaw, level, level_label, chapter_mastery, current_chapter, streak_days, total_hints } = state;
+  const bkt   = bktRaw ?? { P_mastery: 0.10, P_guess: 0.25, P_slip: 0.10 };
   const pct   = Math.round(bkt.P_mastery * 100);
   const colors = LEVEL_COLORS[level] ?? LEVEL_COLORS[1];
 

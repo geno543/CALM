@@ -36,7 +36,7 @@ export const useStudentStore = create<StudentStore>((set) => ({
     try {
       set({ loading: true });
       const { data } = await studentApi.getState();
-      set({ state: data, loading: false });
+      set({ state: { ...DEFAULT_STATE, ...data, bkt: data?.bkt ?? DEFAULT_STATE.bkt }, loading: false });
     } catch {
       set({ loading: false });
     }
@@ -49,6 +49,6 @@ export const useStudentStore = create<StudentStore>((set) => ({
 
   setMode: async (v) => {
     const { data } = await studentApi.setMode(v);
-    set({ state: data });
+    set({ state: { ...DEFAULT_STATE, ...data, bkt: data?.bkt ?? DEFAULT_STATE.bkt } });
   },
 }));
