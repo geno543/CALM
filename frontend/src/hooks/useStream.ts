@@ -57,6 +57,10 @@ export function useStream() {
 
       if (!res.ok || !res.body) {
         clearStreaming();
+        if (res.status === 401) {
+          await supabase.auth.signOut();
+          return;
+        }
         const errMsg: ChatMessage = {
           id:        genId(),
           role:      'system',

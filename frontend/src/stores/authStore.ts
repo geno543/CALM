@@ -38,7 +38,7 @@ supabase.auth.getSession().then(({ data: { session } }) => {
 // TOKEN_REFRESHED fires with a null session momentarily between old and new
 // tokens — treating that as a logout would kick the user out mid-stream.
 supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') {
+  if (event === 'SIGNED_OUT' || (event as string) === 'USER_DELETED') {
     useAuthStore.getState().setUser(null);
   } else if (session?.user) {
     const u = session.user;

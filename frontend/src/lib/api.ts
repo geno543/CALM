@@ -18,6 +18,17 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Auto-logout if backend returns 401 (deleted user, expired token, etc.)
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await supabase.auth.signOut();
+    }
+    return Promise.reject(error);
+  }
+);
+
 // ── Student ───────────────────────────────────────────────────────────────────
 
 export const studentApi = {
