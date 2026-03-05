@@ -2,7 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install Python dependencies
+# Install CPU-only torch first to prevent sentence-transformers from pulling CUDA (~2 GB)
+RUN pip install --no-cache-dir torch==2.5.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining Python dependencies
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
