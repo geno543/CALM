@@ -23,31 +23,44 @@ CHAPTERS = [
 
 # RAG
 
-embeddings = OpenAIEmbeddings(
-    model="openai/text-embedding-3-small",
-    api_key=API_KEY,
-    base_url=BASE_URL
-)
+def _get_embeddings():
+    return OpenAIEmbeddings(
+        model="openai/text-embedding-3-small",
+        api_key=os.getenv("API_KEY", API_KEY),
+        base_url=os.getenv("BASE_URL", BASE_URL)
+    )
 
-# save each file in the dictionary to use spacific chapter
-stores = {}
-for pdf in CHAPTERS:
-    db_path = f"./db_{pdf.replace('.pdf','')}"
-    if os.path.exists(db_path):
-        stores[pdf] = Chroma(persist_directory=db_path, embedding_function=embeddings)
-    else:
-        chunks = RecursiveCharacterTextSplitter(
-            chunk_size=500, chunk_overlap=100
-        ).split_documents(PyPDFLoader(pdf).load())
-        stores[pdf] = Chroma.from_documents(
-            chunks, embedding=embeddings, persist_directory=db_path
-        )
+# Lazy-loaded vector stores — built on first access per chapter
+_stores: dict = {}
+
+def _get_store(pdf: str):
+    if pdf not in _stores:
+        embeddings = _get_embeddings()
+        db_path = f"./db_{pdf.replace('.pdf','')}"
+        if os.path.exists(db_path):
+            try:
+                _stores[pdf] = Chroma(persist_directory=db_path, embedding_function=embeddings)
+            except Exception:
+                # Incompatible persisted DB — rebuild from PDF
+                import shutil
+                shutil.rmtree(db_path, ignore_errors=True)
+                _build_store(pdf, embeddings, db_path)
+        else:
+            _build_store(pdf, embeddings, db_path)
+    return _stores[pdf]
+
+def _build_store(pdf: str, embeddings, db_path: str):
+    chunks = RecursiveCharacterTextSplitter(
+        chunk_size=500, chunk_overlap=100
+    ).split_documents(PyPDFLoader(pdf).load())
+    _stores[pdf] = Chroma.from_documents(
+        chunks, embedding=embeddings, persist_directory=db_path
+    )
 
 
-# retriever 
-def get_context(pdf_file, query) :
-    
-    docs = stores[pdf_file].as_retriever(search_kwargs={"k": 10}).invoke(query)
+# retriever
+def get_context(pdf_file, query):
+    docs = _get_store(pdf_file).as_retriever(search_kwargs={"k": 10}).invoke(query)
     parts = []
     for doc in docs:
         page = doc.metadata.get("page", "?")
