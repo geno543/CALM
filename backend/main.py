@@ -29,21 +29,10 @@ from models  import UserOut, ChatRequest, StudentStateOut, BKTState, ChapterRequ
 # ─────────────────────────────────────────────────────────────────────────────
 app = FastAPI(title="CALM API", version="1.0.0", description="Cognitive Apprenticeship via LLMs")
 
-_default_origins = [
-    "http://localhost:5173", "http://127.0.0.1:5173",
-    "http://localhost:5174", "http://127.0.0.1:5174",
-    "http://localhost:3000", "http://127.0.0.1:3000",
-]
-# ALLOWED_ORIGINS env var lets you add production URLs (comma-separated)
-# e.g. ALLOWED_ORIGINS=https://calm.vercel.app,https://calm-git-main.vercel.app
-_extra = os.getenv("ALLOWED_ORIGINS", "")
-if _extra:
-    _default_origins.extend([o.strip() for o in _extra.split(",") if o.strip()])
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_default_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
