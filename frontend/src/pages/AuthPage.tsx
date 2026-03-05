@@ -86,8 +86,8 @@ export default function AuthPage() {
           },
         });
         if (err) throw err;
-        // With email confirmation ON, session is null — show check-inbox screen
-        setView('check-email');
+        // Skip email confirmation screen — navigate directly
+        navigate('/chat', { replace: true });
       }
     } catch (err: unknown) {
       const msg = (err as { message?: string })?.message;
