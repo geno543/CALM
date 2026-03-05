@@ -80,7 +80,10 @@ export default function AuthPage() {
         const { error: err } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: {
+            data: { full_name: fullName },
+            emailRedirectTo: window.location.origin + '/chat',
+          },
         });
         if (err) throw err;
         // With email confirmation ON, session is null — show check-inbox screen
