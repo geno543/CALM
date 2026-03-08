@@ -1,535 +1,426 @@
 ﻿import { useNavigate } from 'react-router-dom';
-import { motion }      from 'framer-motion';
-import { useLang }     from '../contexts/LanguageContext';
+import { motion } from 'framer-motion';
+import { useLang } from '../contexts/LanguageContext';
 import { useAuthStore } from '../stores/authStore';
 
-// â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const STEPS = [
-  {
-    num: '01',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/>
-        <circle cx="17" cy="11" r="3" fill="var(--color-primary)" stroke="none" opacity="0.5"/><path d="M15.5 11l1 1 2-2" stroke="var(--color-primary)" strokeWidth="1.5"/>
-      </svg>
-    ),
-    color: 'var(--color-primary)',
-    en: { title: 'RAG Grounding', desc: 'Every explanation is retrieved directly from Thomas\'s Calculus â€” grounded in verified knowledge, never hallucinated.' },
-    ar: { title: 'ØªØ£Ø³ÙŠØ³ Ø¨Ø§Ù„Ø§Ø³ØªØ±Ø¬Ø§Ø¹', desc: 'ÙƒÙ„ Ø´Ø±Ø­ Ù…Ø³ØªÙ†Ø¯ Ø¥Ù„Ù‰ Ù…ØµØ§Ø¯Ø± Ù…ÙˆØ«Ù‘Ù‚Ø© Ù…Ù† ÙƒØªØ§Ø¨ Thomas\'s Calculus â€” Ù„Ø§ ØªÙˆÙ‡Ù…Ø§ØªØŒ ÙÙ‚Ø· Ù…Ø¹Ø±ÙØ© Ø¯Ù‚ÙŠÙ‚Ø©.' },
-  },
-  {
-    num: '02',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-    ),
-    color: 'var(--color-accent)',
-    en: { title: 'Bayesian Learner Model', desc: 'Your knowledge state is tracked in real-time across 7 mastery levels using Bayesian Knowledge Tracing â€” adapting to you at every step.' },
-    ar: { title: 'Ù†Ù…ÙˆØ°Ø¬ Ø§Ù„Ù…ØªØ¹Ù„Ù… Ø§Ù„Ø¨Ø§ÙŠØ²ÙŠ', desc: 'ÙŠØªØªØ¨Ø¹ Ø§Ù„Ù†Ø¸Ø§Ù… Ø­Ø§Ù„Ø© Ù…Ø¹Ø±ÙØªÙƒ Ø¹Ø¨Ø± 7 Ù…Ø³ØªÙˆÙŠØ§Øª Ø¥ØªÙ‚Ø§Ù† Ùˆ ÙŠÙƒÙŠÙ‘Ù Ø§Ù„Ø¬Ù„Ø³Ø© Ù„Ùƒ Ø¨Ø´ÙƒÙ„ ÙÙˆØ±ÙŠ.' },
-  },
-  {
-    num: '03',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        <line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="12" y2="13"/>
-      </svg>
-    ),
-    color: '#D2A8FF',
-    en: { title: 'Socratic Engine', desc: 'You are never given direct answers. CALM asks targeted questions that guide your reasoning from first principles to mastery.' },
-    ar: { title: 'Ø§Ù„Ù…Ø­Ø±Ùƒ Ø§Ù„Ø³Ù‚Ø±Ø§Ø·ÙŠ', desc: 'Ù„Ø§ Ø¥Ø¬Ø§Ø¨Ø§Øª Ù…Ø¨Ø§Ø´Ø±Ø© â€” ÙŠØ·Ø±Ø­ CALM Ø£Ø³Ø¦Ù„Ø© Ù…ÙˆØ¬Ù‘Ù‡Ø© ØªØ¨Ù†ÙŠ ÙÙ‡Ù…Ùƒ Ù…Ù† Ø§Ù„Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø£ÙˆÙ„Ù‰ Ø­ØªÙ‰ Ø§Ù„Ø¥ØªÙ‚Ø§Ù†.' },
-  },
+//  Ticker 
+const TICKER_EN = [
+  '7 MASTERY LEVELS',
+  '< 5% HALLUCINATION RATE',
+  'RAG-GROUNDED KNOWLEDGE',
+  'BAYESIAN KNOWLEDGE TRACING',
+  'SOCRATIC METHOD',
+  'BILINGUAL EN / AR',
+  'THOMAS\'S CALCULUS',
+  'K2-THINK POWERED',
+];
+const TICKER_AR = [
+  '7 مستويات إتقان',
+  'أقل من 5% توهمات',
+  'معرفة موثقة بالاسترجاع',
+  'تتبع بايزي للمعرفة',
+  'الأسلوب السقراطي',
+  'ثنائي اللغة',
+  'كتاب Thomas\'s Calculus',
+  'مدعوم بـ K2-Think',
 ];
 
-const STATS = [
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
-      </svg>
-    ),
-    value: '1.2â€“1.8',
-    unit: 'd',
-    en: 'Target Effect Size',
-    ar: 'Ø­Ø¬Ù… Ø§Ù„Ø£Ø«Ø± Ø§Ù„Ù…Ø³ØªÙ‡Ø¯Ù',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
-      </svg>
-    ),
-    value: '7',
-    unit: '',
-    en: 'Mastery Levels',
-    ar: 'Ù…Ø³ØªÙˆÙŠØ§Øª Ø§Ù„Ø¥ØªÙ‚Ø§Ù†',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.22.45 4.56 1.24"/>
-      </svg>
-    ),
-    value: '< 5%',
-    unit: '',
-    en: 'Hallucination Rate',
-    ar: 'Ù…Ø¹Ø¯Ù„ Ø§Ù„ØªÙˆÙ‡Ù…Ø§Øª',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>
-      </svg>
-    ),
-    value: '2',
-    unit: ' lang',
-    en: 'Bilingual EN / AR',
-    ar: 'Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©',
-  },
+function Ticker({ isAr }: { isAr: boolean }) {
+  const items = isAr ? TICKER_AR : TICKER_EN;
+  const doubled = [...items, ...items];
+  return (
+    <div
+      className="overflow-hidden py-3 border-y"
+      style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
+    >
+      <motion.div
+        className="flex gap-8 whitespace-nowrap"
+        animate={{ x: isAr ? ['0%', '50%'] : ['0%', '-50%'] }}
+        transition={{ duration: 22, ease: 'linear', repeat: Infinity }}
+      >
+        {doubled.map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-3 text-[11px] font-bold tracking-widest uppercase shrink-0" style={{ color: 'var(--color-muted)' }}>
+            <span style={{ color: 'var(--color-primary)', opacity: 0.5 }}>/</span>
+            {item}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+//  Pipeline steps 
+const PIPELINE_EN = [
+  { num: '01', title: 'QUESTION RECEIVED', desc: 'You ask anything about calculus. CALM identifies the concept, maps it to the curriculum, and runs RAG retrieval from Thomas\'s Calculus.' },
+  { num: '02', title: 'RAG RETRIEVAL', desc: 'Relevant verified passages are pulled from the textbook. Every explanation is grounded  no hallucinated mathematics.' },
+  { num: '03', title: 'BKT UPDATE', desc: 'Bayesian Knowledge Tracing updates your mastery estimate across the concept tree in real time. 7 levels. Continuous adaptation.' },
+  { num: '04', title: 'SOCRATIC RESPONSE', desc: 'You never get the answer. You get a question that makes you find it. The engine guides you from first principles to mastery.' },
+];
+const PIPELINE_AR = [
+  { num: '01', title: 'استقبال السؤال', desc: 'تطرح أي سؤال في الحساب. يعرف CALM المفهوم ويضعه على خريطة المنهج ويستعيد المعلومات من كتاب Thomas\'s Calculus.' },
+  { num: '02', title: 'استرجاع المعرفة', desc: 'تسحب مقاطع موثقة من الكتاب المدرسي. كل شرح مرتكز على مصادر  لا رياضيات متوهمة.' },
+  { num: '03', title: 'تحديث BKT', desc: 'يحدث تتبع المعرفة البايزي تقدير إتقانك عبر شجرة المفاهيم في الوقت الفعلي. 7 مستويات. تكيف مستمر.' },
+  { num: '04', title: 'الاستجابة السقراطية', desc: 'لا تحصل على الجواب أبدا. تحصل على سؤال يجعلك تجده بنفسك. يقودك المحرك من المبادئ الأولى إلى الإتقان.' },
 ];
 
-const COMPARE = [
-  {
-    en: ['Generic answers with no grounding', 'No memory of what you know', 'Gives you the answer directly', 'One language, one style'],
-    ar: ['Ø¥Ø¬Ø§Ø¨Ø§Øª Ø¹Ø§Ù…Ø© Ø¨Ø¯ÙˆÙ† Ù…ØµØ§Ø¯Ø±', 'Ù„Ø§ Ø°Ø§ÙƒØ±Ø© Ù„Ù…Ø¹Ø±ÙØªÙƒ', 'ØªØ¬ÙŠØ¨ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¯ÙˆÙ† ØªÙˆØ¬ÙŠÙ‡', 'Ù„ØºØ© ÙˆØ§Ø­Ø¯Ø© ÙˆØ£Ø³Ù„ÙˆØ¨ ÙˆØ§Ø­Ø¯'],
+//  Compare 
+const COMPARE = {
+  bad: {
+    en: ['Generic answers with no source grounding', 'No model of what you actually know', 'Gives you the answer directly', 'One language, one style, no adaptation'],
+    ar: ['إجابات عامة بدون مصادر', 'لا نموذج لما تعرفه فعلا', 'تعطيك الجواب مباشرة', 'لغة واحدة بدون تكيف'],
   },
-  {
-    en: ['RAG-grounded in Thomas\'s Calculus', 'Bayesian model of your knowledge state', 'Guides you with Socratic questions', 'Fully bilingual â€” Arabic & English'],
-    ar: ['Ù…Ø±ØªÙƒØ² Ø¹Ù„Ù‰ ÙƒØªØ§Ø¨ Thomas\'s Calculus', 'Ù†Ù…ÙˆØ°Ø¬ Ø¨Ø§ÙŠØ²ÙŠ Ù„Ù…Ø¹Ø±ÙØªÙƒ Ø§Ù„Ø´Ø®ØµÙŠØ©', 'ÙŠÙˆØ¬Ù‘Ù‡Ùƒ Ø¨Ø£Ø³Ø¦Ù„Ø© Ø³Ù‚Ø±Ø§Ø·ÙŠØ©', 'Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©: Ø¹Ø±Ø¨ÙŠ ÙˆØ¥Ù†Ø¬Ù„ÙŠØ²ÙŠ'],
+  good: {
+    en: ['RAG-grounded in Thomas\'s Calculus  no hallucinations', 'Bayesian model of your personal knowledge state', 'Guides you with Socratic questions to build real understanding', 'Fully bilingual Arabic + English, adapts to you'],
+    ar: ['مرتكز على كتاب Thomas\'s Calculus  لا توهمات', 'نموذج بايزي لحالة معرفتك الشخصية', 'يوجهك بأسئلة سقراطية لبناء فهم حقيقي', 'ثنائي اللغة عربي + إنجليزي يتكيف معك'],
   },
-];
-
-const ARCH = [
-  { key: 'RAG',  color: 'var(--color-primary)',  label: 'RAG Layer',     labelAr: 'Ø·Ø¨Ù‚Ø© Ø§Ù„Ø§Ø³ØªØ±Ø¬Ø§Ø¹' },
-  { key: 'BKT',  color: 'var(--color-accent)',   label: 'BKT Tracker',   labelAr: 'Ù…ØªØªØ¨Ø¹ BKT' },
-  { key: 'CTRL', color: 'var(--color-warning)',  label: 'Controller',    labelAr: 'Ø§Ù„Ù…ØªØ­ÙƒÙ…' },
-  { key: 'MCSE', color: '#D2A8FF',              label: 'MCSE Engine',   labelAr: 'Ù…Ø­Ø±Ùƒ MCSE' },
-];
-
-const fadeUp = {
-  hidden:  { opacity: 0, y: 28 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
 };
 
-// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+//  Component 
 export default function Landing() {
-  const navigate        = useNavigate();
+  const navigate = useNavigate();
   const { isAr, toggle } = useLang();
-  const { isAuthed }    = useAuthStore();
+  const { isAuthed } = useAuthStore();
+  const pipeline = isAr ? PIPELINE_AR : PIPELINE_EN;
 
   const go = () => navigate(isAuthed ? '/chat' : '/login');
 
   return (
-    <div className="min-h-dvh" style={{ background: 'var(--color-ink)', color: 'var(--color-text)' }}>
+    <div className="min-h-dvh" style={{ background: 'var(--color-ink)', color: 'var(--color-text)', fontFamily: 'var(--font-sans)' }}>
 
-      {/* â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* NAV */}
       <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 backdrop-blur-md"
-        style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(13,17,23,0.85)' }}
+        className="sticky top-0 z-50 flex items-center justify-between px-6 py-3"
+        style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(13,17,23,0.92)', backdropFilter: 'blur(8px)' }}
       >
         <div className="flex items-center gap-3">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center font-extrabold text-sm"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
-          >
-            C
-          </div>
-          <span className="font-bold tracking-tight text-sm">CALM</span>
+          <span className="font-black tracking-tighter text-base" style={{ letterSpacing: '-0.04em' }}>CALM</span>
           <span
-            className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+            className="hidden sm:inline text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+            style={{ background: 'var(--color-primary-dim)', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}
           >
-            {isAr ? 'Ù„Ù„Ø·Ù„Ø§Ø¨' : 'For Students'}
+            {isAr ? 'للطلاب' : 'Beta'}
           </span>
         </div>
-
         <div className="flex items-center gap-2">
           <button
             onClick={toggle}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+            className="text-[11px] font-bold tracking-widest uppercase px-3 py-1.5 cursor-pointer transition-colors"
+            style={{ color: 'var(--color-muted)', border: '1px solid var(--color-border)' }}
           >
-            {isAr ? 'EN' : 'Ø¹Ø±Ø¨ÙŠ'}
+            {isAr ? 'EN' : 'عربي'}
           </button>
           <button
             onClick={go}
-            className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)', boxShadow: '0 0 16px rgba(88,166,255,0.25)' }}
+            className="text-xs font-black tracking-wider uppercase px-4 py-1.5 cursor-pointer transition-all"
+            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
           >
-            {isAuthed ? (isAr ? 'Ø§Ø³ØªÙ…Ø± Ø§Ù„ØªØ¹Ù„Ù…' : 'Continue Learning') : (isAr ? 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ø§Ù‹' : 'Get Started Free')}
+            {isAuthed ? (isAr ? 'استمر' : 'Continue ') : (isAr ? 'ابدأ' : 'Start ')}
           </button>
         </div>
       </nav>
 
-      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div style={{ background: 'radial-gradient(ellipse 90% 55% at 50% 0%, rgba(31,59,94,0.7) 0%, transparent 70%)' }}>
-        <motion.section
-          className="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center"
-          initial="hidden"
-          animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+      {/* HERO */}
+      <section
+        className="px-6 pt-20 pb-0 max-w-5xl mx-auto"
+        style={{ borderBottom: '1px solid var(--color-border)' }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <motion.div
-            custom={0} variants={fadeUp}
-            className="flex justify-center mb-6"
+          <p
+            className="text-[11px] font-bold tracking-widest uppercase mb-6"
+            style={{ color: 'var(--color-primary)' }}
           >
-            <span
-              className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase"
-              style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
-            >
-              {isAr ? 'Ù†Ø¸Ø§Ù… Ø§Ù„ØªØ¯Ø±ÙŠØ³ Ø§Ù„Ù…Ø¹Ø±ÙÙŠ' : 'Cognitive Apprenticeship System'}
-            </span>
-          </motion.div>
+            {isAr ? '>_ نظام التدريس المعرفي' : '>_ Cognitive Apprenticeship System'}
+          </p>
 
-          <motion.h1
-            custom={1} variants={fadeUp}
-            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6"
-            style={{ letterSpacing: '-0.03em' }}
+          <h1
+            className="font-black leading-none mb-8"
+            style={{ fontSize: 'clamp(2.8rem, 8vw, 5.5rem)', letterSpacing: '-0.04em', color: 'var(--color-text)' }}
             dir={isAr ? 'rtl' : 'ltr'}
           >
             {isAr ? (
               <>
-                Ù…Ø§Ø°Ø§ Ù„Ùˆ ØªØ¹Ù„Ù‘Ù… ÙƒÙ„ Ø·Ø§Ù„Ø¨
-                <br />
-                <span style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  Ø¨Ù…Ø³ØªÙˆÙ‰ Ø£ÙØ¶Ù„ Ø§Ù„Ø¬Ø§Ù…Ø¹Ø§ØªØŸ
-                </span>
+                كل طالب يستحق<br />
+                <span style={{ color: 'var(--color-primary)' }}>مدرسا من الدرجة الأولى.</span>
               </>
             ) : (
               <>
-                Every student deserves{' '}
-                <br />
-                <span style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  world-class mentorship.
-                </span>
+                Stop memorizing.<br />
+                <span style={{ color: 'var(--color-primary)' }}>Start understanding.</span>
               </>
             )}
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            custom={2} variants={fadeUp}
-            className="text-lg max-w-2xl mx-auto mb-4 leading-relaxed"
-            style={{ color: 'var(--color-muted)' }}
+          <p
+            className="text-base leading-relaxed mb-8 max-w-2xl"
+            style={{ color: 'var(--color-muted)', lineHeight: 1.7 }}
+            dir={isAr ? 'rtl' : 'ltr'}
           >
             {isAr
-              ? 'CALM Ù†Ø¸Ø§Ù… ØªØ¯Ø±ÙŠØ³ Ø°ÙƒØ§Ø¡ Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ø¹ØµØ¨ÙŠ-Ø±Ù…Ø²ÙŠ ÙŠÙÙ‚Ù„Ù‘Øµ Ø§Ù„ÙØ¬ÙˆØ© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ© ÙÙŠ Ù…Ø¬Ø§Ù„Ø§Øª STEM Ù…Ù† Ø®Ù„Ø§Ù„ ØªØ¹Ù„ÙŠÙ… Ø´Ø®ØµÙŠ Ø¹Ù„Ù‰ Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¯ÙƒØªÙˆØ±Ø§Ù‡.'
-              : 'CALM is a neuro-symbolic AI tutoring system that closes the STEM achievement gap through PhD-level personalized mentorship â€” built for under-resourced students worldwide.'}
-          </motion.p>
+              ? 'CALM هو نظام تدريس ذكاء اصطناعي عصبي-رمزي يقلص الفجوة التعليمية في STEM من خلال تعليم شخصي على مستوى الدكتوراه  مبني للطلاب في كل مكان حول العالم.'
+              : 'CALM is a neuro-symbolic AI tutor that closes the STEM achievement gap through PhD-level personalized mentorship. Built for under-resourced students worldwide.'}
+          </p>
 
-          <motion.p
-            custom={3} variants={fadeUp}
-            className="text-xs mb-10"
-            style={{ color: 'var(--color-subtle, #484f58)' }}
-          >
-            {isAr
-              ? 'Ù…Ø¨Ù†ÙŠÙ‘ Ø¹Ù„Ù‰ Thomas\'s Calculus Â· Ù…Ø¯Ø¹ÙˆÙ… Ø¨Ù€ K2-Think Â· Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©'
-              : "Built on Thomas's Calculus Â· Powered by K2-Think AI Â· Bilingual EN / AR"}
-          </motion.p>
-
-          <motion.div custom={4} variants={fadeUp} className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap items-center gap-4 pb-12">
             <motion.button
               onClick={go}
-              whileHover={{ scale: 1.03, boxShadow: '0 0 32px rgba(88,166,255,0.4)' }}
-              whileTap={{ scale: 0.97 }}
-              className="px-8 py-3 rounded-xl text-base font-semibold transition-all cursor-pointer"
-              style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="font-black tracking-wider uppercase text-sm px-8 py-3 cursor-pointer transition-all"
+              style={{ background: 'var(--color-primary)', color: 'var(--color-ink)', boxShadow: '0 0 24px rgba(88,166,255,0.3)' }}
             >
-              {isAr ? 'Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„Ø¢Ù†' : 'Start Learning Now'}
+              {isAr ? 'ابدأ التعلم الآن ' : 'Start Learning Now '}
             </motion.button>
-            <motion.button
-              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-8 py-3 rounded-xl text-base font-medium cursor-pointer"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+            <button
+              onClick={() => document.getElementById('pipeline')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-sm font-bold tracking-wider uppercase cursor-pointer transition-colors"
+              style={{ color: 'var(--color-muted)', textDecoration: 'underline', textUnderlineOffset: 4 }}
             >
-              {isAr ? 'ÙƒÙŠÙ ÙŠØ¹Ù…Ù„ØŸ' : 'How it works'}
-            </motion.button>
-          </motion.div>
-        </motion.section>
-      </div>
-
-      {/* â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="max-w-5xl mx-auto px-6 py-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
-              className="rounded-xl p-5 flex flex-col gap-3"
-              style={{ background: 'linear-gradient(135deg, var(--color-surface), var(--color-surface-2))', border: '1px solid var(--color-border)' }}
-            >
-              <div style={{ color: 'var(--color-primary)' }}>{s.icon}</div>
-              <div>
-                <div className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--color-primary)' }}>
-                  {s.value}<span className="text-sm font-semibold">{s.unit}</span>
-                </div>
-                <div className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>
-                  {isAr ? s.ar : s.en}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* â”€â”€ How it works â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section id="how" className="max-w-5xl mx-auto px-6 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
-        >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-primary)' }}>
-            {isAr ? 'Ø¢Ù„ÙŠØ© Ø§Ù„Ø¹Ù…Ù„' : 'How It Works'}
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'Ø«Ù„Ø§Ø« Ø·Ø¨Ù‚Ø§Øª Ù…Ù† Ø§Ù„Ø°ÙƒØ§Ø¡' : 'Three Layers of Intelligence'}
-          </h2>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-3 gap-5">
-          {STEPS.map((step, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.12 }}
-              className="rounded-2xl p-6 space-y-4"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-            >
-              <div className="flex items-start justify-between">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `${step.color}18`, border: `1px solid ${step.color}55`, color: step.color }}
-                >
-                  {step.icon}
-                </div>
-                <span className="text-[11px] font-bold tracking-widest" style={{ color: 'var(--color-border)' }}>
-                  {step.num}
-                </span>
-              </div>
-              <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text)' }}>
-                {isAr ? step.ar.title : step.en.title}
-              </h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                {isAr ? step.ar.desc : step.en.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* â”€â”€ Comparison â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="max-w-5xl mx-auto px-6 pb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-accent)' }}>
-            {isAr ? 'Ù„Ù…Ø§Ø°Ø§ CALMØŸ' : 'Why CALM?'}
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'Ù„ÙŠØ³ Ù…Ø¬Ø±Ø¯ Ù†Ù…ÙˆØ°Ø¬ Ù„ØºÙˆÙŠ Ø¢Ø®Ø±' : 'Not just another chatbot'}
-          </h2>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid sm:grid-cols-2 gap-4"
-        >
-          {/* Left â€” generic AI */}
-          <div
-            className="rounded-2xl p-6 space-y-3"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-          >
-            <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'Ø¯Ø±Ø¯Ø´Ø© Ø°ÙƒØ§Ø¡ Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ø¹Ø§Ù…Ø©' : 'Generic AI Chat'}
-            </p>
-            {COMPARE[0][isAr ? 'ar' : 'en'].map((item, i) => (
-              <div key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--color-muted)' }}>
-                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-danger)', flexShrink: 0 }}>âœ•</span>
-                {item}
-              </div>
-            ))}
+              {isAr ? 'كيف يعمل' : 'How it works'}
+            </button>
+            <span className="text-xs" style={{ color: 'var(--color-subtle, #484f58)' }}>
+              {isAr ? '// مجاني تماما' : '// free to use. no credit card.'}
+            </span>
           </div>
+        </motion.div>
+      </section>
 
-          {/* Right â€” CALM */}
-          <div
-            className="rounded-2xl p-6 space-y-3"
-            style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)' }}
+      {/* TICKER */}
+      <Ticker isAr={isAr} />
+
+      {/* STATS BAR */}
+      <section
+        className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-0"
+        style={{ borderBottom: '1px solid var(--color-border)' }}
+      >
+        {[
+          { val: '1.21.8', unit: 'd', label: isAr ? 'حجم الأثر المستهدف' : 'Target Effect Size' },
+          { val: '7', unit: '', label: isAr ? 'مستويات الإتقان' : 'Mastery Levels' },
+          { val: '< 5%', unit: '', label: isAr ? 'معدل التوهمات' : 'Hallucination Rate' },
+          { val: '2', unit: ' lang', label: isAr ? 'ثنائي اللغة' : 'Bilingual EN / AR' },
+        ].map((s, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.08 }}
+            className="py-6 px-4"
+            style={{ borderRight: i < 3 ? '1px solid var(--color-border)' : 'none' }}
           >
-            <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--color-primary)' }}>
+            <div
+              className="font-black tracking-tighter mb-1"
+              style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: 'var(--color-primary)', letterSpacing: '-0.04em' }}
+            >
+              {s.val}<span className="text-sm">{s.unit}</span>
+            </div>
+            <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
+              {s.label}
+            </div>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* PIPELINE */}
+      <section id="pipeline" className="max-w-5xl mx-auto px-6 py-20" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-14"
+          dir={isAr ? 'rtl' : 'ltr'}
+        >
+          <p className="text-[11px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--color-primary)' }}>
+            {isAr ? '>_ آلية العمل' : '>_ The Pipeline'}
+          </p>
+          <h2
+            className="font-black leading-tight"
+            style={{ fontSize: 'clamp(1.6rem, 5vw, 2.8rem)', letterSpacing: '-0.03em' }}
+          >
+            {isAr ? 'كيف يعمل CALM' : 'How CALM Works.'}
+          </h2>
+        </motion.div>
+
+        <div className="space-y-0">
+          {pipeline.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: isAr ? 20 : -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="flex gap-8 py-8"
+              style={{ borderTop: '1px solid var(--color-border)' }}
+              dir={isAr ? 'rtl' : 'ltr'}
+            >
+              <div
+                className="font-black shrink-0 leading-none"
+                style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', color: 'var(--color-border)', letterSpacing: '-0.05em', minWidth: '3rem' }}
+              >
+                {step.num}
+              </div>
+              <div className="pt-1">
+                <h3
+                  className="font-black tracking-tight mb-2"
+                  style={{ fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', letterSpacing: '-0.02em' }}
+                >
+                  {step.title}
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+                  {step.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* COMPARISON */}
+      <section className="max-w-5xl mx-auto px-6 py-20" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-14"
+          dir={isAr ? 'rtl' : 'ltr'}
+        >
+          <p className="text-[11px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--color-accent)' }}>
+            {isAr ? '>_ لماذا CALM' : '>_ Why CALM?'}
+          </p>
+          <h2
+            className="font-black leading-tight"
+            style={{ fontSize: 'clamp(1.6rem, 5vw, 2.8rem)', letterSpacing: '-0.03em' }}
+          >
+            {isAr ? 'ليس مجرد نموذج لغوي.' : 'Not just another chatbot.'}
+          </h2>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 gap-0">
+          {/* Bad */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="p-8"
+            style={{ border: '1px solid var(--color-border)' }}
+            dir={isAr ? 'rtl' : 'ltr'}
+          >
+            <p className="text-[11px] font-bold tracking-widest uppercase mb-6" style={{ color: 'var(--color-muted)' }}>
+              {isAr ? 'دردشة ذكاء اصطناعي عامة' : 'Generic AI Chat'}
+            </p>
+            <div className="space-y-4">
+              {COMPARE.bad[isAr ? 'ar' : 'en'].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 text-sm" style={{ color: 'var(--color-muted)' }}>
+                  <span className="font-black text-base leading-tight shrink-0" style={{ color: 'var(--color-danger)' }}></span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Good */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="p-8"
+            style={{ border: '1px solid var(--color-primary)', background: 'var(--color-primary-dim)' }}
+            dir={isAr ? 'rtl' : 'ltr'}
+          >
+            <p className="text-[11px] font-bold tracking-widest uppercase mb-6" style={{ color: 'var(--color-primary)' }}>
               CALM
             </p>
-            {COMPARE[1][isAr ? 'ar' : 'en'].map((item, i) => (
-              <div key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--color-text)' }}>
-                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-accent)', flexShrink: 0 }}>âœ“</span>
-                {item}
-              </div>
-            ))}
-          </div>
-        </motion.div>
+            <div className="space-y-4">
+              {COMPARE.good[isAr ? 'ar' : 'en'].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 text-sm" style={{ color: 'var(--color-text)' }}>
+                  <span className="font-black text-base leading-tight shrink-0" style={{ color: 'var(--color-accent)' }}>+</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* â”€â”€ Architecture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <section className="max-w-5xl mx-auto px-6 pb-20">
+      {/* CTA */}
+      <section className="max-w-5xl mx-auto px-6 py-24 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10"
-        >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-warning)' }}>
-            {isAr ? 'Ø§Ù„Ø¨Ù†ÙŠØ© Ø§Ù„ØªÙ‚Ù†ÙŠØ©' : 'Under the Hood'}
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'Ø¨Ù†ÙŠØ© Ø§Ù„Ù†Ø¸Ø§Ù…' : 'System Architecture'}
-          </h2>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="rounded-2xl p-8"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-        >
-          <div className="flex flex-wrap justify-center items-center gap-2">
-            <div className="text-center">
-              <div
-                className="px-4 py-2.5 rounded-xl text-xs font-medium"
-                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
-              >
-                {isAr ? 'Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø·Ø§Ù„Ø¨' : 'Student Input'}
-              </div>
-            </div>
-
-            {ARCH.map((a) => (
-              <div key={a.key} className="flex items-center gap-2">
-                <svg width="24" height="12" viewBox="0 0 24 12" fill="none">
-                  <path d="M0 6h20M16 1l5 5-5 5" stroke={a.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <div className="text-center">
-                  <div
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight"
-                    style={{ background: `${a.color}15`, border: `1px solid ${a.color}`, color: a.color }}
-                  >
-                    {a.key}
-                  </div>
-                  <div className="text-[10px] mt-1.5" style={{ color: 'var(--color-muted)' }}>
-                    {isAr ? a.labelAr : a.label}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            <div className="flex items-center gap-2">
-              <svg width="24" height="12" viewBox="0 0 24 12" fill="none">
-                <path d="M0 6h20M16 1l5 5-5 5" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div className="text-center">
-                <div
-                  className="px-4 py-2.5 rounded-xl text-xs font-medium"
-                  style={{ background: 'rgba(61,220,151,0.1)', border: '1px solid var(--color-accent)', color: 'var(--color-accent)' }}
-                >
-                  {isAr ? 'Ø§Ù„Ø§Ø³ØªØ¬Ø§Ø¨Ø©' : 'Response'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* â”€â”€ CTA Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div style={{ background: 'linear-gradient(135deg, rgba(31,59,94,0.6) 0%, rgba(61,220,151,0.08) 100%)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
-        <motion.section
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-5xl mx-auto px-6 py-20 text-center"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-primary)' }}>
-            {isAr ? 'Ø§Ù„ÙØ±ØµØ© Ù„Ù„Ø¬Ù…ÙŠØ¹' : 'Equal Access'}
+          <p className="text-[11px] font-bold tracking-widest uppercase mb-6" style={{ color: 'var(--color-primary)' }}>
+            {isAr ? '>_ الفرصة للجميع' : '>_ Equal Access'}
           </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
-            {isAr
-              ? 'Ø§Ù„Ø°ÙƒØ§Ø¡ Ù…ÙˆØ¬ÙˆØ¯ ÙÙŠ ÙƒÙ„ Ù…ÙƒØ§Ù†.'
-              : 'Intelligence is everywhere.'}
-            <br />
-            <span style={{ color: 'var(--color-accent)' }}>
-              {isAr ? 'Ø§Ù„ÙØ±ØµØ© ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† ÙƒØ°Ù„Ùƒ.' : 'Opportunity should be too.'}
-            </span>
-          </h2>
-          <p className="mb-8 text-sm max-w-xl mx-auto leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-            {isAr
-              ? 'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ CALM ÙˆØ§Ø¨Ø¯Ø£ Ø±Ø­Ù„ØªÙƒ Ù†Ø­Ùˆ Ø¥ØªÙ‚Ø§Ù† Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª Ø¨Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¬Ø§Ù…Ø¹Ø§Øª Ø§Ù„Ø¹Ø§Ù„Ù…ÙŠØ© â€” Ø¨Ù„ØºØªÙƒØŒ ÙˆØ¨ÙˆØªÙŠØ±ØªÙƒ Ø§Ù„Ø®Ø§ØµØ©.'
-              : 'Join CALM and begin your journey to world-class calculus mastery â€” at your own pace, in your own language.'}
-          </p>
-          <motion.button
-            onClick={go}
-            whileHover={{ scale: 1.04, boxShadow: '0 0 40px rgba(88,166,255,0.4)' }}
-            whileTap={{ scale: 0.96 }}
-            className="px-12 py-3.5 rounded-xl text-base font-semibold cursor-pointer"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
+          <h2
+            className="font-black leading-none mb-6"
+            style={{ fontSize: 'clamp(2rem, 7vw, 4.5rem)', letterSpacing: '-0.04em' }}
+            dir={isAr ? 'rtl' : 'ltr'}
           >
-            {isAr ? 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ø§Ù‹' : 'Start for Free'}
-          </motion.button>
-        </motion.section>
-      </div>
+            {isAr ? (
+              <>الذكاء في كل مكان.<br /><span style={{ color: 'var(--color-accent)' }}>الفرصة يجب أن تكون كذلك.</span></>
+            ) : (
+              <>Intelligence is everywhere.<br /><span style={{ color: 'var(--color-accent)' }}>Opportunity should be too.</span></>
+            )}
+          </h2>
+          <p className="text-sm mb-10 max-w-lg mx-auto" style={{ color: 'var(--color-muted)', lineHeight: 1.7 }}>
+            {isAr
+              ? 'انضم إلى CALM وابدأ رحلتك نحو إتقان الرياضيات بمستوى الجامعات العالمية  بلغتك وبوتيرتك الخاصة.'
+              : 'Join CALM and begin your journey to world-class calculus mastery  at your own pace, in your own language.'}
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            <motion.button
+              onClick={go}
+              whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(88,166,255,0.4)' }}
+              whileTap={{ scale: 0.97 }}
+              className="font-black tracking-wider uppercase text-sm px-10 py-3.5 cursor-pointer"
+              style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
+            >
+              {isAr ? 'ابدأ مجانا ' : 'Start for Free '}
+            </motion.button>
+            {!isAuthed && (
+              <button
+                onClick={() => navigate('/login')}
+                className="text-sm font-bold tracking-wider uppercase cursor-pointer transition-colors"
+                style={{ color: 'var(--color-muted)', textDecoration: 'underline', textUnderlineOffset: 4 }}
+              >
+                {isAr ? 'لدي حساب  تسجيل الدخول' : 'Already a student? Login'}
+              </button>
+            )}
+          </div>
+          <p className="mt-4 text-xs" style={{ color: 'var(--color-subtle, #484f58)' }}>
+            {isAr ? '// مجاني تماما. لا يطلب بطاقة ائتمان.' : '// free forever. no credit card.'}
+          </p>
+        </motion.div>
+      </section>
 
-      {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-ink)' }}>
-        <div className="max-w-5xl mx-auto px-6 py-12 grid sm:grid-cols-3 gap-8 text-sm">
+      {/* FOOTER */}
+      <footer style={{ borderTop: '1px solid var(--color-border)' }}>
+        <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-md flex items-center justify-center font-extrabold text-xs" style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}>C</div>
-              <span className="font-bold tracking-tight">CALM</span>
-            </div>
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-              {isAr
-                ? 'Ù†Ø¸Ø§Ù… ØªØ¯Ø±ÙŠØ³ Ù…Ø¹Ø±ÙÙŠ Ø¨Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ù„Ù„Ø·Ù„Ø§Ø¨ Ø­ÙˆÙ„ Ø§Ù„Ø¹Ø§Ù„Ù….'
-                : 'Cognitive Apprenticeship via Large Language Models â€” built for students worldwide.'}
+            <span className="font-black tracking-tighter text-sm" style={{ letterSpacing: '-0.04em' }}>CALM</span>
+            <span className="text-xs ml-2" style={{ color: 'var(--color-muted)' }}>v1.0</span>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-subtle, #484f58)' }}>
+              POWERED BY K2-THINK x MBZUAI  {isAr ? 'مبني للطلاب' : 'built for students'}
             </p>
           </div>
-          <div>
-            <p className="font-semibold mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'Ø±ÙˆØ§Ø¨Ø· Ø³Ø±ÙŠØ¹Ø©' : 'Quick Links'}
-            </p>
-            <ul className="space-y-2 text-xs" style={{ color: 'var(--color-muted)' }}>
-              <li><button onClick={go} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'Ø§Ù„Ø¯Ø±Ø¯Ø´Ø©' : 'Start Chat'}</button></li>
-              <li><button onClick={() => navigate('/progress')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'Ø®Ø±ÙŠØ·Ø© Ø§Ù„ØªÙ‚Ø¯Ù…' : 'Progress Map'}</button></li>
-              <li><button onClick={() => navigate('/login')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„' : 'Sign In'}</button></li>
-            </ul>
+          <div className="flex items-center gap-6 text-xs font-bold tracking-wider uppercase" style={{ color: 'var(--color-muted)' }}>
+            <button onClick={go} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
+              {isAr ? 'الدردشة' : 'Chat'}
+            </button>
+            <button onClick={() => navigate('/progress')} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
+              {isAr ? 'التقدم' : 'Progress'}
+            </button>
+            <button onClick={() => navigate('/login')} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
+              {isAr ? 'دخول' : 'Login'}
+            </button>
           </div>
-          <div>
-            <p className="font-semibold mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'Ù…Ø¨Ù†ÙŠÙ‘ Ø¨Ù€' : 'Built With'}
-            </p>
-            <ul className="space-y-2 text-xs" style={{ color: 'var(--color-muted)' }}>
-              <li>K2-Think-v2 (MBZUAI-IFM)</li>
-              <li>Supabase Auth</li>
-              <li>Thomas's Calculus RAG</li>
-            </ul>
-          </div>
-        </div>
-        <div className="text-center pb-6 text-xs" style={{ color: 'var(--color-subtle, #484f58)' }}>
-          CALM â€” 2026
         </div>
       </footer>
     </div>
   );
 }
-
