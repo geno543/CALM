@@ -89,34 +89,28 @@ export default function MasteryPanel() {
   const colors = LEVEL_COLORS[level] ?? LEVEL_COLORS[1];
 
   return (
-    <div
-      className="rounded-xl p-4 space-y-4"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-    >
+    <div className="space-y-0" style={{ borderTop: '1px solid var(--color-border)' }}>
+
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <div
-          className="w-2 h-2 rounded-full"
-          style={{ background: 'var(--color-accent)' }}
-        />
-        <span className="text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-muted)' }}>
-          {isAr ? 'مستوى الإتقان' : 'Mastery Level'}
-        </span>
+      <div className="px-1 pt-3 pb-2">
+        <p className="text-[10px] font-black tracking-widest uppercase" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
+          {isAr ? '// مستوى الإتقان' : '// mastery'}
+        </p>
       </div>
 
       {/* Ring + level badge */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 px-1 pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <div className="relative w-20 h-20 shrink-0">
           <Arc pct={pct} />
           <div className="absolute inset-0 flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.span
                 key={pct}
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="text-lg font-bold"
-                style={{ color: 'var(--color-accent)' }}
+                exit={{ opacity: 0, scale: 0.85 }}
+                className="font-black"
+                style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)', fontSize: '1.1rem' }}
               >
                 {pct}%
               </motion.span>
@@ -133,12 +127,12 @@ export default function MasteryPanel() {
               exit={{ opacity: 0, y: -4 }}
             >
               <div
-                className="inline-block px-2 py-0.5 rounded-md text-xs font-semibold mb-1"
-                style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
+                className="inline-block px-2 py-0.5 text-[10px] font-black tracking-widest uppercase mb-1"
+                style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}`, fontFamily: 'var(--font-mono)' }}
               >
-                Level {level}
+                LVL {level}
               </div>
-              <p className="text-sm font-medium truncate" style={{ color: 'var(--color-text)' }}>
+              <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>
                 {isAr ? LEVEL_NAMES_AR[level] : level_label}
               </p>
             </motion.div>
@@ -146,46 +140,37 @@ export default function MasteryPanel() {
         </div>
       </div>
 
-      {/* Streak + hints row */}
+      {/* Streak + hints */}
       <div
-        className="flex items-center justify-between rounded-lg px-3 py-2 text-xs"
-        style={{ background: 'var(--color-surface-2, #161b22)', border: '1px solid var(--color-border-2)' }}
+        className="flex items-center justify-between px-2 py-2 text-[10px] font-bold"
+        style={{ borderBottom: '1px solid var(--color-border)', fontFamily: 'var(--font-mono)' }}
       >
-        <span style={{ color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 4 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--color-warning)" style={{ flexShrink: 0 }}><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>
-          <span className="font-semibold">{streak_days ?? 1}</span>{' '}
-          <span style={{ color: 'var(--color-muted)' }}>{isAr ? 'يوم متتالي' : 'day streak'}</span>
+        <span style={{ color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--color-warning)" style={{ flexShrink: 0 }}><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>
+          <span className="tabular-nums" style={{ color: 'var(--color-warning)' }}>{streak_days ?? 1}</span>
+          <span style={{ color: 'var(--color-subtle)' }}>{isAr ? 'يوم' : 'days'}</span>
         </span>
-        <span style={{ color: 'var(--color-muted)' }}>
-          {isAr ? 'تلميحات:' : 'Hints:'}{' '}
-          <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>{total_hints ?? 0}</span>
+        <span style={{ color: 'var(--color-subtle)' }}>
+          {isAr ? 'تلميحات:' : 'hints:'}{' '}
+          <span className="tabular-nums" style={{ color: 'var(--color-accent)' }}>{total_hints ?? 0}</span>
         </span>
       </div>
 
       {/* BKT stats */}
-      <div className="space-y-2 pt-1 border-t" style={{ borderColor: 'var(--color-border-2)' }}>
-        <StatBar
-          label={isAr ? 'الإتقان' : 'P(Mastery)'}
-          value={bkt.P_mastery}
-          color="var(--color-accent)"
-        />
-        <StatBar
-          label={isAr ? 'التخمين' : 'P(Guess)'}
-          value={bkt.P_guess}
-          color="var(--color-warning)"
-        />
-        <StatBar
-          label={isAr ? 'الزلق' : 'P(Slip)'}
-          value={bkt.P_slip}
-          color="var(--color-danger)"
-        />
+      <div className="space-y-2 px-1 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <p className="text-[10px] font-black tracking-widest uppercase mb-2" style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)' }}>
+          {isAr ? '// معاملات BKT' : '// bkt params'}
+        </p>
+        <StatBar label={isAr ? 'الإتقان' : 'P(Mastery)'} value={bkt.P_mastery} color="var(--color-accent)" />
+        <StatBar label={isAr ? 'التخمين' : 'P(Guess)'}   value={bkt.P_guess}   color="var(--color-warning)" />
+        <StatBar label={isAr ? 'الزلق'  : 'P(Slip)'}    value={bkt.P_slip}    color="var(--color-danger)" />
       </div>
 
       {/* Per-chapter mastery */}
       {chapter_mastery && Object.keys(chapter_mastery).length > 0 && (
-        <div className="space-y-2 pt-1 border-t" style={{ borderColor: 'var(--color-border-2)' }}>
-          <p className="text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-muted)' }}>
-            {isAr ? 'إتقان الفصول' : 'Chapter Mastery'}
+        <div className="space-y-2 px-1 py-3">
+          <p className="text-[10px] font-black tracking-widest uppercase mb-2" style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)' }}>
+            {isAr ? '// إتقان الفصول' : '// chapters'}
           </p>
           {CHAPTERS.map(ch => {
             const concept = chapter_mastery[ch.file];

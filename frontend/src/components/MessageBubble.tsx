@@ -72,18 +72,16 @@ export default function MessageBubble({ message, streaming }: Props) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex justify-center my-3"
+        className="flex items-center gap-3 my-4 px-2"
       >
+        <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
         <span
-          className="px-3 py-1 rounded-full text-xs"
-          style={{
-            background:  'var(--color-surface-2)',
-            border:      '1px solid var(--color-border)',
-            color: 'var(--color-muted)',
-          }}
+          className="text-[10px] font-black tracking-widest uppercase shrink-0"
+          style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)' }}
         >
           {content}
         </span>
+        <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
       </motion.div>
     );
   }
@@ -92,17 +90,20 @@ export default function MessageBubble({ message, streaming }: Props) {
   if (role === 'user') {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex justify-end mb-4"
+        initial={{ opacity: 0, x: 10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.18 }}
+        className="flex justify-end mb-2"
       >
         <div
-          className="max-w-[72%] px-4 py-2.5 rounded-2xl rounded-br-sm text-sm leading-relaxed"
+          className="max-w-[74%] px-4 py-2.5 text-sm leading-relaxed"
           style={{
-            background: 'var(--color-primary-dim)',
-            border:     '1px solid var(--color-primary)',
-            color:      'var(--color-text)',
+            background:   'var(--color-primary-dim)',
+            borderTop:    '1px solid var(--color-border)',
+            borderRight:  '1px solid var(--color-border)',
+            borderBottom: '1px solid var(--color-border)',
+            borderLeft:   '3px solid var(--color-primary)',
+            color:        'var(--color-text)',
           }}
         >
           {content}
@@ -117,31 +118,43 @@ export default function MessageBubble({ message, streaming }: Props) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className="flex gap-3 mb-6 group"
+      transition={{ duration: 0.22 }}
+      className="flex mb-2"
     >
-      {/* Avatar */}
+      {/* [C] monospace avatar tag */}
       <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-        style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-primary)' }}
+        className="shrink-0 self-start pt-2.5 pr-2"
+        style={{
+          fontFamily:    'var(--font-mono)',
+          fontSize:      '10px',
+          fontWeight:    900,
+          color:         'var(--color-accent)',
+          letterSpacing: '0.04em',
+          width:         38,
+          textAlign:     'right',
+          userSelect:    'none',
+        }}
       >
-        C
+        [C]
       </div>
 
-      <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex-1 min-w-0 space-y-1.5">
         {hasSteps ? (
-          // Parsed multi-step layout
           steps.map((step, idx) => (
             <div key={idx}>
               {step.label && (
                 <div
-                  className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-semibold tracking-wider uppercase mb-2"
+                  className="inline-flex items-center px-2 py-0.5 text-[10px] font-black tracking-widest uppercase mb-1"
                   style={{
-                    background: `${step.color}18`,
-                    border:     `1px solid ${step.color}`,
-                    color:       step.color,
+                    fontFamily:  'var(--font-mono)',
+                    background:  `${step.color}12`,
+                    borderTop:   `1px solid ${step.color}40`,
+                    borderRight: `1px solid ${step.color}40`,
+                    borderBottom:`1px solid ${step.color}40`,
+                    borderLeft:  `3px solid ${step.color}`,
+                    color:        step.color,
                   }}
                 >
                   {step.label}
@@ -149,12 +162,13 @@ export default function MessageBubble({ message, streaming }: Props) {
               )}
               {step.body && (
                 <div
-                  className={`rounded-xl px-4 py-3 text-sm ${step.label ? 'border-l-2' : ''}`}
+                  className="px-4 py-3 text-sm"
                   style={{
-                    background:  'var(--color-surface)',
-                    border:      `1px solid var(--color-border)`,
-                    borderLeftColor: step.color || undefined,
-                    borderLeftWidth: step.label ? '3px' : '1px',
+                    background:   step.label ? `${step.color}07` : 'var(--color-surface)',
+                    borderTop:    '1px solid var(--color-border)',
+                    borderRight:  '1px solid var(--color-border)',
+                    borderBottom: '1px solid var(--color-border)',
+                    borderLeft:   `3px solid ${step.color || 'var(--color-accent)'}`,
                   }}
                 >
                   <MarkdownSection content={step.body} />
@@ -163,22 +177,27 @@ export default function MessageBubble({ message, streaming }: Props) {
             </div>
           ))
         ) : (
-          // Simple single-block response
           <div
-            className="rounded-xl px-4 py-3 text-sm"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            className="px-4 py-3 text-sm"
+            style={{
+              background:   'var(--color-surface)',
+              borderTop:    '1px solid var(--color-border)',
+              borderRight:  '1px solid var(--color-border)',
+              borderBottom: '1px solid var(--color-border)',
+              borderLeft:   '3px solid var(--color-accent)',
+            }}
           >
             <MarkdownSection content={content} />
           </div>
         )}
 
-        {/* Streaming cursor */}
+        {/* Blinking block cursor */}
         {streaming && (
           <motion.span
-            className="inline-block w-0.5 h-4 ml-1 rounded"
-            style={{ background: 'var(--color-primary)' }}
+            className="inline-block w-2 h-3.5 ml-1"
+            style={{ background: 'var(--color-accent)', verticalAlign: 'middle' }}
             animate={{ opacity: [1, 0] }}
-            transition={{ repeat: Infinity, duration: 0.7, ease: 'linear' }}
+            transition={{ repeat: Infinity, duration: 0.6, ease: 'linear' }}
           />
         )}
       </div>

@@ -99,40 +99,57 @@ export default function ChatInput({ onSend, externalDraft, onDraftConsumed }: Pr
 
   return (
     <div
-      className="flex flex-col gap-2 p-3 rounded-2xl"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+      className="flex flex-col gap-2 p-3"
+      style={{
+        background:   'var(--color-surface)',
+        border:       '1px solid var(--color-border)',
+        borderTop:    '2px solid var(--color-border)',
+        transition:   'border-top-color 0.15s',
+      }}
+      onFocusCapture={e => (e.currentTarget.style.borderTopColor = 'var(--color-accent)') as unknown as void}
+      onBlurCapture={e  => (e.currentTarget.style.borderTopColor = 'var(--color-border)') as unknown as void}
     >
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={onKeyDown}
-        disabled={isStreaming}
-        dir={isAr ? 'rtl' : 'ltr'}
-        placeholder={isAr ? 'اسأل عن أي موضوع في الحساب...' : 'Ask anything about calculus...'}
-        rows={1}
-        className="w-full resize-none bg-transparent text-sm leading-relaxed outline-none placeholder-shown:placeholder"
-        style={{
-          color:       'var(--color-text)',
-          fontFamily:  isAr ? 'var(--font-arabic)' : 'var(--font-sans)',
-          caretColor:  'var(--color-primary)',
-        }}
-      />
+      {/* prompt prefix + textarea row */}
+      <div className="flex items-start gap-2">
+        <span
+          className="text-xs font-black tracking-wider shrink-0 mt-1 select-none"
+          style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}
+        >
+          &gt;_
+        </span>
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={onKeyDown}
+          disabled={isStreaming}
+          dir={isAr ? 'rtl' : 'ltr'}
+          placeholder={isAr ? 'اسأل عن أي موضوع في الحساب...' : 'Ask anything about calculus...'}
+          rows={1}
+          className="w-full resize-none bg-transparent text-sm leading-relaxed outline-none"
+          style={{
+            color:      'var(--color-text)',
+            fontFamily: isAr ? 'var(--font-arabic)' : 'var(--font-sans)',
+            caretColor: 'var(--color-accent)',
+          }}
+        />
+      </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* Language toggle */}
           <button
             onClick={toggle}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center px-2.5 py-1 text-[10px] font-black tracking-widest uppercase cursor-pointer transition-colors"
             style={{
-              background: 'var(--color-surface-2)',
+              background: 'transparent',
               border:     '1px solid var(--color-border)',
               color:      'var(--color-muted)',
+              fontFamily: 'var(--font-mono)',
             }}
             title="Toggle language"
           >
-            <span>{isAr ? 'عربي' : 'EN'}</span>
+            {isAr ? 'AR' : 'EN'}
           </button>
 
           {/* Mic button */}
@@ -140,18 +157,18 @@ export default function ChatInput({ onSend, externalDraft, onDraftConsumed }: Pr
             <button
               onClick={toggleVoice}
               title={isRecording ? (isAr ? 'إيقاف التسجيل' : 'Stop recording') : (isAr ? 'إدخال صوتي' : 'Voice input')}
-              className="relative flex items-center justify-center w-7 h-7 rounded-lg transition-all cursor-pointer"
+              className="relative flex items-center justify-center w-7 h-7 transition-all cursor-pointer"
               style={{
-                background: isRecording ? '#2B1A1A' : 'var(--color-surface-2)',
+                background: isRecording ? '#2B1A1A' : 'transparent',
                 border:     `1px solid ${isRecording ? 'var(--color-danger)' : 'var(--color-border)'}`,
                 color:      isRecording ? 'var(--color-danger)' : 'var(--color-muted)',
               }}
             >
               {isRecording && (
                 <motion.div
-                  className="absolute inset-0 rounded-lg"
-                  style={{ border: '1px solid var(--color-danger)', opacity: 0.5 }}
-                  animate={{ scale: [1, 1.4, 1] }}
+                  className="absolute inset-0"
+                  style={{ border: '1px solid var(--color-danger)', opacity: 0.45 }}
+                  animate={{ scale: [1, 1.5, 1] }}
                   transition={{ repeat: Infinity, duration: 1.2 }}
                 />
               )}
@@ -164,8 +181,8 @@ export default function ChatInput({ onSend, externalDraft, onDraftConsumed }: Pr
             </button>
           )}
 
-          <span className="text-xs" style={{ color: 'var(--color-subtle)' }}>
-            {isAr ? 'Enter للإرسال · Shift+Enter لسطر جديد' : 'Enter to send · Shift+Enter for new line'}
+          <span className="text-[10px] font-bold" style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)' }}>
+            {isAr ? 'Enter → إرسال' : 'Enter → send'}
           </span>
         </div>
 
@@ -174,24 +191,24 @@ export default function ChatInput({ onSend, externalDraft, onDraftConsumed }: Pr
           <motion.button
             onClick={submit}
             disabled={isStreaming || !value.trim()}
-            whileHover={{ scale: isStreaming ? 1 : 1.05 }}
-            whileTap={{ scale: isStreaming ? 1 : 0.95 }}
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer"
+            whileHover={{ scale: isStreaming ? 1 : 1.04 }}
+            whileTap={{ scale: isStreaming ? 1 : 0.97 }}
+            className="w-9 h-9 flex items-center justify-center transition-all cursor-pointer"
             style={{
-              background: (!value.trim() || isStreaming) ? 'var(--color-surface-2)' : 'var(--color-primary)',
-              border:     '1px solid var(--color-border)',
+              background: (!value.trim() || isStreaming) ? 'transparent' : 'var(--color-primary)',
+              border:     `1px solid ${(!value.trim() || isStreaming) ? 'var(--color-border)' : 'var(--color-primary)'}`,
               color:      (!value.trim() || isStreaming) ? 'var(--color-subtle)' : 'var(--color-ink)',
             }}
           >
             {isStreaming ? (
               <motion.div
-                className="w-3.5 h-3.5 rounded-sm"
+                className="w-3 h-3"
                 style={{ background: 'var(--color-muted)' }}
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ repeat: Infinity, duration: 1 }}
               />
             ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163z"/>
               </svg>
             )}

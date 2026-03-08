@@ -43,54 +43,46 @@ function SessionPanel() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Current chapter */}
-      <div
-        className="rounded-xl p-4 space-y-2"
-        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
-          {isAr ? 'الفصل الحالي' : 'Active Chapter'}
+    <div className="space-y-0">
+      {/* Active chapter */}
+      <div className="py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <p className="text-[10px] font-black tracking-widest uppercase mb-1" style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)' }}>
+          {isAr ? '// الفصل الحالي' : '// active chapter'}
         </p>
-        <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+        <p className="text-xs font-medium" style={{ color: 'var(--color-text)' }}>
           {state.current_chapter.replace('.pdf', '').replace(/_/g, ' ')}
         </p>
       </div>
 
       {/* Level badge */}
-      <div
-        className="rounded-xl p-4 flex items-center gap-3"
-        style={{ background: colors.bg, border: `1px solid ${colors.border}` }}
-      >
+      <div className="py-3 flex items-center gap-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-base"
-          style={{ background: colors.border, color: colors.text }}
+          className="w-9 h-9 flex items-center justify-center font-black text-base"
+          style={{ background: colors.bg, border: `1px solid ${colors.border}`, color: colors.text, fontFamily: 'var(--font-mono)' }}
         >
           {state.level}
         </div>
         <div>
-          <p className="text-xs font-semibold" style={{ color: colors.text }}>
-            {isAr ? 'المستوى' : 'Level'} {state.level}
+          <p className="text-[10px] font-black tracking-widest uppercase" style={{ color: colors.text, fontFamily: 'var(--font-mono)' }}>
+            {isAr ? 'مستوى' : 'LVL'} {state.level}
           </p>
           <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{state.level_label}</p>
         </div>
       </div>
 
       {/* Reset */}
-      <div
-        className="rounded-xl p-4"
-        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-muted)' }}>
-          {isAr ? 'الجلسة' : 'Session'}
+      <div className="pt-3">
+        <p className="text-[10px] font-black tracking-widest uppercase mb-2" style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)' }}>
+          {isAr ? '// الجلسة' : '// session'}
         </p>
         <button
           onClick={handleReset}
-          className="w-full py-2 rounded-lg text-xs font-medium transition-all cursor-pointer"
+          className="w-full py-2 text-[10px] font-black tracking-widest uppercase transition-all cursor-pointer"
           style={{
-            background:  confirm ? '#2B1A1A' : 'var(--color-surface-2)',
+            background:  confirm ? '#2B1A1A' : 'transparent',
             border:      `1px solid ${confirm ? 'var(--color-danger)' : 'var(--color-border)'}`,
             color:       confirm ? 'var(--color-danger)' : 'var(--color-muted)',
+            fontFamily:  'var(--font-mono)',
           }}
         >
           {confirm
@@ -100,8 +92,8 @@ function SessionPanel() {
         {confirm && (
           <button
             onClick={() => setConfirm(false)}
-            className="w-full mt-2 py-1.5 rounded-lg text-xs cursor-pointer"
-            style={{ color: 'var(--color-muted)' }}
+            className="w-full mt-1.5 py-1.5 text-[10px] font-bold tracking-widest uppercase cursor-pointer"
+            style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)' }}
           >
             {isAr ? 'إلغاء' : 'Cancel'}
           </button>
@@ -260,30 +252,47 @@ export default function ChatLayout() {
         style={{ background: 'var(--color-surface)', borderRight: '1px solid var(--color-border)' }}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="font-semibold tracking-tight text-sm">CALM</span>
+        <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <Link to="/" className="flex items-center gap-1 no-underline">
+            <span
+              className="font-black tracking-widest text-sm"
+              style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}
+            >
+              &gt;_CALM
+            </span>
           </Link>
           <button
             onClick={toggle}
-            className="text-xs px-2 py-1 rounded-md cursor-pointer"
-            style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+            className="text-[10px] font-black tracking-widest px-2 py-1 cursor-pointer"
+            style={{
+              border:     '1px solid var(--color-border)',
+              color:      'var(--color-muted)',
+              background: 'transparent',
+              fontFamily: 'var(--font-mono)',
+            }}
           >
-            {lang.toUpperCase()}
+            [{lang.toUpperCase()}]
           </button>
         </div>
 
         {/* User info */}
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-2)' }}>
+        <div className="flex items-center gap-3 px-2 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm shrink-0"
-            style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
+            className="w-8 h-8 flex items-center justify-center font-black text-sm shrink-0"
+            style={{
+              background:  'var(--color-primary-dim)',
+              border:      '1px solid var(--color-primary)',
+              color:       'var(--color-primary)',
+              fontFamily:  'var(--font-mono)',
+            }}
           >
             {user?.username?.[0]?.toUpperCase() ?? 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: 'var(--color-text)' }}>{user?.full_name || user?.username}</p>
-            <p className="text-xs truncate" style={{ color: 'var(--color-muted)' }}>{user?.username}</p>
+            <p className="text-xs font-bold truncate" style={{ color: 'var(--color-text)' }}>{user?.full_name || user?.username}</p>
+            <p className="text-[10px] font-bold truncate" style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)' }}>
+              // {user?.username}
+            </p>
           </div>
         </div>
 
@@ -298,10 +307,10 @@ export default function ChatLayout() {
           {/* Progress Map link */}
           <Link
             to="/progress"
-            className="flex items-center gap-2 w-full py-2 px-3 rounded-lg text-xs font-medium no-underline transition-colors"
-            style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+            className="flex items-center gap-2 w-full py-2 px-3 text-[10px] font-black tracking-widest uppercase no-underline transition-colors"
+            style={{ border: '1px solid var(--color-border)', color: 'var(--color-muted)', fontFamily: 'var(--font-mono)', background: 'transparent' }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
               <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
             </svg>
@@ -309,8 +318,8 @@ export default function ChatLayout() {
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-            style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+            className="w-full py-2 text-[10px] font-black tracking-widest uppercase transition-colors cursor-pointer"
+            style={{ border: '1px solid var(--color-border)', color: 'var(--color-muted)', fontFamily: 'var(--font-mono)', background: 'transparent' }}
           >
             {isAr ? 'تسجيل الخروج' : 'Sign Out'}
           </button>
@@ -328,8 +337,8 @@ export default function ChatLayout() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setSidebarOpen((v) => !v)}
-              className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+              className="lg:hidden w-8 h-8 flex items-center justify-center cursor-pointer"
+              style={{ background: 'transparent', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
                 <rect y="0" width="14" height="1.5" rx="1"/>
@@ -338,11 +347,11 @@ export default function ChatLayout() {
               </svg>
             </button>
             <div>
-              <h1 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                MCSE — {isAr ? 'المحرك السقراطي' : 'Socratic Engine'}
+              <h1 className="text-xs font-black tracking-wider uppercase" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-mono)' }}>
+                &gt;_ MCSE
               </h1>
-              <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
-                {isAr ? 'Thomas\'s Calculus · الطبعة 14' : 'Thomas\'s Calculus · 14th Edition'}
+              <p className="text-[10px] font-bold" style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)' }}>
+                {isAr ? '// المحرك السقراطي · توماس 14' : '// Socratic Engine · Thomas Cal.'}
               </p>
             </div>
           </div>
@@ -350,38 +359,40 @@ export default function ChatLayout() {
           {/* Mode toggle */}
           <button
             onClick={() => setMode(!learningMode)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black tracking-widest uppercase cursor-pointer transition-all"
             style={{
-              background: learningMode ? 'var(--color-primary-dim)' : 'var(--color-surface)',
+              background: learningMode ? 'var(--color-primary-dim)' : 'transparent',
               border:     `1px solid ${learningMode ? 'var(--color-primary)' : 'var(--color-border)'}`,
               color:      learningMode ? 'var(--color-primary)' : 'var(--color-muted)',
+              fontFamily: 'var(--font-mono)',
             }}
             title={learningMode
               ? (isAr ? 'وضع التعلم السقراطي — انقر للتبديل إلى الإجابات المباشرة' : 'Socratic mode — click for direct answers')
               : (isAr ? 'وضع الإجابات المباشرة — انقر للعودة للتعلم' : 'Direct mode — click to return to Socratic')}
           >
             {learningMode ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             )}{' '}
-            {isAr ? (learningMode ? 'تعلم' : 'مباشر') : (learningMode ? 'Learning' : 'Direct')}
+            {isAr ? (learningMode ? 'تعلم' : 'مباشر') : (learningMode ? 'Learn' : 'Direct')}
           </button>
 
           {/* Right panel toggle */}
           <button
             onClick={() => setRightOpen((v) => !v)}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs cursor-pointer"
+            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black tracking-widest uppercase cursor-pointer"
             style={{
-              background:  rightOpen ? 'var(--color-primary-dim)' : 'var(--color-surface)',
+              background:  rightOpen ? 'var(--color-primary-dim)' : 'transparent',
               border:      `1px solid ${rightOpen ? 'var(--color-primary)' : 'var(--color-border)'}`,
               color:       rightOpen ? 'var(--color-primary)' : 'var(--color-muted)',
+              fontFamily:  'var(--font-mono)',
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
               <path d="M2 2h12v1H2zm0 5h8v1H2zm0 5h10v1H2z"/>
             </svg>
-            {isAr ? 'التفاصيل' : 'Session'}
+            {isAr ? 'التفاصيل' : 'Panel'}
           </button>
 
           {/* Export Summary */}
@@ -413,15 +424,20 @@ export default function ChatLayout() {
           {/* Mode banner — shown only in direct answer mode */}
           {!learningMode && (
             <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-3"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+              className="flex items-center gap-2 px-3 py-2 text-[10px] font-bold mb-3"
+              style={{
+                background:  'transparent',
+                borderLeft:  '3px solid var(--color-warning)',
+                borderTop:   '1px solid var(--color-border)',
+                borderRight: '1px solid var(--color-border)',
+                borderBottom:'1px solid var(--color-border)',
+                color:       'var(--color-warning)',
+                fontFamily:  'var(--font-mono)',
+              }}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F0A04B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>
-                {isAr
-                  ? 'وضع الإجابات المباشرة — ستحصل على إجابات كاملة ومباشرة بدون أسلوب سقراطي.'
-                  : 'Direct Answer Mode — full explanations without Socratic questioning.'}
-              </span>
+              // {isAr
+                ? 'وضع الإجابات المباشرة — إجابات كاملة بدون السقراطي'
+                : 'direct mode — full answers, no Socratic guidance'}
             </div>
           )}
           {messages.length === 0 && !isStreaming && (
@@ -430,18 +446,27 @@ export default function ChatLayout() {
               className="h-full flex flex-col items-center justify-center text-center py-12"
             >
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center font-extrabold text-2xl mb-5"
-                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-primary)' }}
+                className="flex items-center justify-center font-black text-2xl mb-6"
+                style={{
+                  width: 72, height: 72,
+                  border:     '1px solid var(--color-border)',
+                  color:      'var(--color-primary)',
+                  fontFamily: 'var(--font-mono)',
+                  background: 'var(--color-surface)',
+                }}
               >
-                C
+                &gt;_
               </div>
-              <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
-                {isAr ? 'مرحباً بك في CALM' : 'Welcome to CALM'}
+              <h2
+                className="text-sm font-black tracking-widest uppercase mb-2"
+                style={{ color: 'var(--color-text)', fontFamily: 'var(--font-mono)' }}
+              >
+                {isAr ? 'مرحباً في CALM' : 'Welcome to CALM'}
               </h2>
-              <p className="text-sm max-w-sm" style={{ color: 'var(--color-muted)' }}>
+              <p className="text-xs max-w-xs" style={{ color: 'var(--color-muted)' }}>
                 {isAr
-                  ? 'اسأل عن أي موضوع في الحساب. سيرشدك المحرك السقراطي خطوة بخطوة.'
-                  : 'Ask about any calculus topic. The Socratic Engine will guide you step by step without giving direct answers.'}
+                  ? '// اسأل عن أي موضوع في الحساب. سيرشدك المحرك السقراطي خطوة بخطوة.'
+                  : '// Ask any calculus topic. The Socratic Engine guides without giving direct answers.'}
               </p>
             </motion.div>
           )}
@@ -457,22 +482,34 @@ export default function ChatLayout() {
           {isStreaming && !streamingContent && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="flex gap-3 mb-4"
+              className="flex mb-2"
             >
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
-                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-primary)' }}
+                className="shrink-0 self-start pt-2 pr-2 select-none"
+                style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 900,
+                  color: 'var(--color-accent)', width: 38, textAlign: 'right',
+                }}
               >
-                C
+                [C]
               </div>
-              <div className="flex items-center gap-1.5 px-4 py-3 rounded-xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                {[0, 0.15, 0.3].map((delay) => (
+              <div
+                className="flex items-center gap-1 px-4 py-3"
+                style={{
+                  background:   'var(--color-surface)',
+                  borderTop:    '1px solid var(--color-border)',
+                  borderRight:  '1px solid var(--color-border)',
+                  borderBottom: '1px solid var(--color-border)',
+                  borderLeft:   '3px solid var(--color-accent)',
+                }}
+              >
+                {[0, 0.18, 0.36].map((delay) => (
                   <motion.div
                     key={delay}
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: 'var(--color-primary)' }}
-                    animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
-                    transition={{ repeat: Infinity, duration: 0.9, delay }}
+                    className="w-1.5 h-4"
+                    style={{ background: 'var(--color-accent)' }}
+                    animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.4, 1, 0.4] }}
+                    transition={{ repeat: Infinity, duration: 0.75, delay }}
                   />
                 ))}
               </div>
@@ -504,8 +541,8 @@ export default function ChatLayout() {
             style={{ borderLeft: '1px solid var(--color-border)', background: 'var(--color-surface)' }}
           >
             <div className="p-4 overflow-y-auto flex-1">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--color-muted)' }}>
-                {isAr ? 'الجلسة' : 'Session Details'}
+              <p className="text-[10px] font-black tracking-widest uppercase mb-4" style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
+                &gt;_ {isAr ? 'الجلسة' : 'Session'}
               </p>
               <SessionPanel />
             </div>
