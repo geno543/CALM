@@ -47,7 +47,21 @@ function parseSteps(content: string): { label: string; body: string; color: stri
   return result;
 }
 
-const MarkdownSection = memo(({ content }: { content: string }) => (
+/** Normalise LaTeX delimiters that the LLM still emits despite prompt rules.
+ *  \[...\]  →  $$...$$   (display math)
+ *  \(...\)  →  $...$     (inline math)
+ */
+function normalizeMath(text: string): string {
+  // display: \[...\]
+  text = text.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
+  // inline: \(...\)
+  text = text.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
+  return text;
+}
+
+const MarkdownSection = memo(({ content }: { content: string }) => {
+  const safe = normalizeMath(content);
+  return (
   <div className="prose-calm">
     <ReactMarkdown
       remarkPlugins={[remarkMath, remarkGfm]}
@@ -75,10 +89,11 @@ const MarkdownSection = memo(({ content }: { content: string }) => (
         tr: ({ children }) => <tr style={{ borderBottom: '1px solid var(--color-border)' }}>{children}</tr>,
       }}
     >
-      {content}
+      {safe}
     </ReactMarkdown>
   </div>
-));
+  );
+});
 MarkdownSection.displayName = 'MarkdownSection';
 
 export default function MessageBubble({ message, streaming }: Props) {
