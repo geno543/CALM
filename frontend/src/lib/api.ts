@@ -18,11 +18,22 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Auto-logout if backend returns 401 (deleted user, expired token, etc.)
+// On 401: try refreshing the Supabase session first (token may have just expired).
+// Only sign the user out if the refresh itself fails — avoids kicking users out
+// during long sessions (e.g. after leveling up, right when the JWT rotates).
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config as typeof error.config & { _retry?: boolean };
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const { error: refreshError, data } = await supabase.auth.refreshSession();
+      if (!refreshError && data.session?.access_token) {
+        // Retry the original request with the fresh token
+        originalRequest.headers['Authorization'] = `Bearer ${data.session.access_token}`;
+        return api(originalRequest);
+      }
+      // Refresh failed — session is truly dead
       await supabase.auth.signOut();
     }
     return Promise.reject(error);

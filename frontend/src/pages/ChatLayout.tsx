@@ -518,77 +518,94 @@ export default function ChatLayout() {
         {summaryOpen && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(4px)' }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(2px)' }}
             onClick={(e) => { if (e.target === e.currentTarget) setSummaryOpen(false); }}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 12 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 12 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="relative flex flex-col rounded-2xl overflow-hidden"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', width: '100%', maxWidth: 680, maxHeight: '88vh' }}
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 32 }}
+              className="relative flex flex-col w-full sm:w-auto overflow-hidden"
+              style={{
+                background: 'var(--color-ink)',
+                border: '1px solid var(--color-border)',
+                width: '100%',
+                maxWidth: 700,
+                maxHeight: '92vh',
+                borderRadius: 0,
+              }}
             >
-              {/* Modal header */}
-              <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)' }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                      <line x1="16" y1="13" x2="8" y2="13"/>
-                      <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{isAr ? 'ملخص الجلسة' : 'Session Summary'}</p>
-                    <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{isAr ? 'مُنشأ بالذكاء الاصطناعي' : 'AI-generated'}</p>
-                  </div>
+              {/* Top accent line */}
+              <div style={{ height: 2, background: 'linear-gradient(90deg, var(--color-primary), var(--color-accent))', flexShrink: 0 }} />
+
+              {/* Header */}
+              <div
+                className="flex items-center justify-between px-5 py-3 shrink-0"
+                style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}
+              >
+                <div className="flex items-center gap-4">
+                  <span
+                    className="text-[10px] font-black tracking-widest uppercase"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    {isAr ? '>_ ملخص الجلسة' : '>_ Session Summary'}
+                  </span>
+                  <span
+                    className="text-[10px] font-bold tracking-widest uppercase"
+                    style={{ color: 'var(--color-subtle, #484f58)' }}
+                  >
+                    {isAr ? '// منشأ بالذكاء الاصطناعي' : '// ai-generated'}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setSummaryMd(''); openSummary(); }}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
-                    style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+                    className="text-[10px] font-black tracking-widest uppercase px-3 py-1.5 cursor-pointer transition-all"
+                    style={{ border: '1px solid var(--color-border)', color: 'var(--color-muted)', background: 'transparent' }}
                     title="Regenerate"
                   >
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="23 4 23 10 17 10"/>
-                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                    </svg>
+                    {isAr ? 'إعادة' : 'Regen'}
                   </button>
                   <button
                     onClick={() => window.print()}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
-                    style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
+                    className="text-[10px] font-black tracking-widest uppercase px-3 py-1.5 cursor-pointer transition-colors"
+                    style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)', background: 'var(--color-primary-dim)' }}
                   >
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    {isAr ? 'طباعة / PDF' : 'Print / PDF'}
+                    {isAr ? 'PDF / طباعة' : 'Print / PDF'}
                   </button>
                   <button
                     onClick={() => setSummaryOpen(false)}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer"
-                    style={{ color: 'var(--color-muted)', background: 'var(--color-surface-2)' }}
+                    className="w-7 h-7 flex items-center justify-center cursor-pointer transition-colors"
+                    style={{ border: '1px solid var(--color-border)', color: 'var(--color-muted)', background: 'transparent' }}
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 </div>
               </div>
 
-              {/* Modal body */}
-              <div id="summary-print-area" className="flex-1 overflow-y-auto px-6 py-5" style={{ color: 'var(--color-text)' }}>
+              {/* Body */}
+              <div id="summary-print-area" className="flex-1 overflow-y-auto" style={{ color: 'var(--color-text)' }}>
                 {summaryLoading ? (
-                  <div className="flex flex-col items-center justify-center py-16 gap-4">
-                    <motion.div
-                      animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                      className="w-8 h-8 rounded-full"
-                      style={{ border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary)' }}
-                    />
-                    <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{isAr ? 'يتم إنشاء الملخص...' : 'Generating your summary...'}</p>
+                  <div className="flex flex-col items-center justify-center py-20 gap-5">
+                    <div className="flex items-center gap-1.5">
+                      {[0, 0.18, 0.36].map((d) => (
+                        <motion.div
+                          key={d}
+                          className="w-1.5 h-5"
+                          style={{ background: 'var(--color-primary)' }}
+                          animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 0.8, repeat: Infinity, delay: d }}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'var(--color-muted)' }}>
+                      {isAr ? 'جاري التحليل...' : 'Analyzing session...'}
+                    </p>
                   </div>
                 ) : (
-                  <div className="prose prose-invert prose-sm max-w-none summary-content">
+                  <div className="px-6 py-6 summary-content">
                     <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                       {summaryMd}
                     </ReactMarkdown>

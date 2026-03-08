@@ -117,14 +117,25 @@ pre code { background: transparent; border: none; padding: 0; color: var(--color
 .prose-calm th { background: var(--color-surface-2); color: var(--color-text-2); font-weight: 500; }
 
 /* ── Summary modal content ───────────────────────────────────────────────── */
-.summary-content { color: var(--color-text); line-height: 1.75; }
-.summary-content h1, .summary-content h2 { color: var(--color-text); font-weight: 700; margin: 1.2em 0 0.5em; font-size: 1.05em; padding-bottom: 0.35em; border-bottom: 1px solid var(--color-border); }
-.summary-content h3 { color: var(--color-text); font-weight: 600; margin: 1em 0 0.35em; font-size: 0.97em; }
-.summary-content p  { margin: 0.5em 0; }
-.summary-content ul, .summary-content ol { padding-left: 1.5em; margin: 0.5em 0; }
-.summary-content li { margin: 0.3em 0; color: var(--color-text); }
-.summary-content strong { color: var(--color-primary); font-weight: 600; }
-.summary-content code { font-size: 0.875em; background: var(--color-surface-2); padding: 0.1em 0.35em; border-radius: 4px; color: var(--color-accent); }
+.summary-content { color: var(--color-text); line-height: 1.8; font-size: 0.9rem; }
+.summary-content h1, .summary-content h2 {
+  color: var(--color-primary);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72em;
+  margin: 1.8em 0 0.6em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--color-border);
+}
+.summary-content h2::before { content: '// '; color: var(--color-muted); }
+.summary-content h3 { color: var(--color-accent); font-weight: 700; margin: 1em 0 0.35em; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.06em; }
+.summary-content p  { margin: 0.55em 0; color: var(--color-text); }
+.summary-content ul, .summary-content ol { padding-left: 1.4em; margin: 0.4em 0; }
+.summary-content li { margin: 0.35em 0; color: var(--color-text); }
+.summary-content li::marker { color: var(--color-primary); }
+.summary-content strong { color: var(--color-warning, #F0A04B); font-weight: 700; }
+.summary-content code { font-size: 0.85em; background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.1em 0.4em; border-radius: 0; color: var(--color-accent); font-family: 'Courier New', monospace; }
 
 /* ── Print styles (window.print() for PDF export) ────────────────────────── */
 @media print {
