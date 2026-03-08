@@ -180,17 +180,21 @@ async def chat_summary(current_user: dict = Depends(get_current_user)):
     )
 
     prompt = (
-        "You are an expert educational summarizer. "
-        "Given the following tutoring session transcript, produce a concise structured summary in Markdown. "
-        "Use these exact sections:\n"
+        "You are an expert educational summarizer for a university-level Calculus course.\n"
+        "Given the tutoring session transcript below, produce a structured Markdown summary.\n\n"
+        "Rules:\n"
+        "- Use EXACTLY these four section headings (level-2 ##), nothing else.\n"
+        "- Each section must have 3–5 bullet points (- ...).\n"
+        "- Be SPECIFIC: name actual functions, theorems, formulas, or procedures from the session.\n"
+        "- If a section has no direct evidence in the transcript, infer reasonable content from the topic the student asked about.\n"
+        "- Use $...$ for inline math and $$...$$ for display math.\n"
+        "- Do NOT add an introduction, conclusion, or any section outside the four below.\n\n"
         "## Key Concepts Learned\n"
         "## Problem-Solving Rules Practiced\n"
         "## Common Mistakes to Watch For\n"
         "## Recommended Next Steps\n\n"
-        "Be specific — reference actual mathematical content from the session. "
-        "Keep each section to 3-5 bullet points. Use $...$ for inline math, $$...$$ for display math.\n\n"
         f"--- SESSION TRANSCRIPT ---\n{transcript}\n--- END TRANSCRIPT ---\n\n"
-        "Now write the summary:"
+        "Now write the summary (start directly with ## Key Concepts Learned):"
     )
 
     def _call_llm():
