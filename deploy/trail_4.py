@@ -75,27 +75,36 @@ def get_context(pdf_file, query):
 
 # ── JSON helper: strips markdown fences and <think> blocks before parsing ─────
 def _parse_json(content: str) -> dict:
-    """Robustly extract the first JSON object from a model response.
+    """Robustly extract the first well-formed JSON object from a model response.
 
     Handles:
     - <think>…</think> reasoning preambles (K2-Think-v2)
     - ```json … ``` markdown fences
-    - Extra prose before or after the JSON brace
+    - Extra prose / multiple JSON objects (takes only the first balanced one)
     """
     content = content.strip()
-    # 1. Remove <think>…</think> blocks entirely
+    # 1. Remove ALL <think>…</think> blocks (may be multiple)
     content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
     # 2. Strip markdown code fences
     if content.startswith("```"):
         content = re.sub(r"^```[a-zA-Z]*\n?", "", content)
         content = re.sub(r"\n?```\s*$", "", content.strip())
     content = content.strip()
-    # 3. If still not starting with '{', extract the first {...} block
-    if not content.startswith("{"):
-        match = re.search(r"\{.*\}", content, flags=re.DOTALL)
-        if match:
-            content = match.group(0)
-    return json.loads(content.strip())
+    # 3. Extract the FIRST balanced {...} block using brace counting
+    #    (avoids greedy regex spanning multiple JSON objects)
+    start = content.find("{")
+    if start == -1:
+        return json.loads(content)   # let json.loads raise a clear error
+    depth = 0
+    for i, ch in enumerate(content[start:], start):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return json.loads(content[start:i + 1])
+    # Fallback: try parsing whatever we have
+    return json.loads(content[start:])
 
 
 #main LLM
