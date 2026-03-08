@@ -151,8 +151,9 @@ export default function MasteryPanel() {
         className="flex items-center justify-between rounded-lg px-3 py-2 text-xs"
         style={{ background: 'var(--color-surface-2, #161b22)', border: '1px solid var(--color-border-2)' }}
       >
-        <span style={{ color: 'var(--color-text)' }}>
-          🔥 <span className="font-semibold">{streak_days ?? 1}</span>{' '}
+        <span style={{ color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--color-warning)" style={{ flexShrink: 0 }}><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>
+          <span className="font-semibold">{streak_days ?? 1}</span>{' '}
           <span style={{ color: 'var(--color-muted)' }}>{isAr ? 'يوم متتالي' : 'day streak'}</span>
         </span>
         <span style={{ color: 'var(--color-muted)' }}>

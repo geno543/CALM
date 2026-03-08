@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown             from 'react-markdown';
+import remarkMath               from 'remark-math';
+import rehypeKatex              from 'rehype-katex';
 import { useAuthStore }          from '../stores/authStore';
 import { useChatStore }          from '../stores/chatStore';
 import { useStudentStore }       from '../stores/studentStore';
@@ -134,9 +137,26 @@ export default function ChatLayout() {
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [rightOpen,   setRightOpen]   = useState(false);
-  const [draft,       setDraft]       = useState('');
+  const [sidebarOpen,   setSidebarOpen]   = useState(false);
+  const [rightOpen,     setRightOpen]     = useState(false);
+  const [draft,         setDraft]         = useState('');
+  const [summaryOpen,   setSummaryOpen]   = useState(false);
+  const [summaryMd,     setSummaryMd]     = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
+
+  const openSummary = useCallback(async () => {
+    setSummaryOpen(true);
+    if (summaryMd) return; // already fetched this session
+    setSummaryLoading(true);
+    try {
+      const { data } = await chatApi.summary();
+      setSummaryMd(data.summary ?? '');
+    } catch {
+      setSummaryMd('Failed to generate summary. Please try again.');
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [summaryMd]);
 
   // Load history & student state on mount (runs once, guarded by historyLoaded)
   useEffect(() => {
@@ -340,7 +360,11 @@ export default function ChatLayout() {
               ? (isAr ? 'وضع التعلم السقراطي — انقر للتبديل إلى الإجابات المباشرة' : 'Socratic mode — click for direct answers')
               : (isAr ? 'وضع الإجابات المباشرة — انقر للعودة للتعلم' : 'Direct mode — click to return to Socratic')}
           >
-            {learningMode ? '🎓' : '💬'}{' '}
+            {learningMode ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            )}{' '}
             {isAr ? (learningMode ? 'تعلم' : 'مباشر') : (learningMode ? 'Learning' : 'Direct')}
           </button>
 
@@ -359,6 +383,29 @@ export default function ChatLayout() {
             </svg>
             {isAr ? 'التفاصيل' : 'Session'}
           </button>
+
+          {/* Export Summary */}
+          {messages.length > 0 && (
+            <button
+              onClick={openSummary}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
+              style={{
+                background: 'var(--color-surface)',
+                border:     '1px solid var(--color-border)',
+                color:      'var(--color-muted)',
+              }}
+              title={isAr ? 'ملخص الجلسة بالذكاء الاصطناعي' : 'AI Session Summary'}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+              {isAr ? 'ملخص' : 'Summary'}
+            </button>
+          )}
         </div>
 
         {/* Messages area */}
@@ -369,7 +416,7 @@ export default function ChatLayout() {
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-3"
               style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
             >
-              <span style={{ color: '#F0A04B' }}>💬</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F0A04B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span>
                 {isAr
                   ? 'وضع الإجابات المباشرة — ستحصل على إجابات كاملة ومباشرة بدون أسلوب سقراطي.'
@@ -463,6 +510,93 @@ export default function ChatLayout() {
               <SessionPanel />
             </div>
           </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* ── Summary Modal ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {summaryOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(4px)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) setSummaryOpen(false); }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 12 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="relative flex flex-col rounded-2xl overflow-hidden"
+              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', width: '100%', maxWidth: 680, maxHeight: '88vh' }}
+            >
+              {/* Modal header */}
+              <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{isAr ? 'ملخص الجلسة' : 'Session Summary'}</p>
+                    <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{isAr ? 'مُنشأ بالذكاء الاصطناعي' : 'AI-generated'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { setSummaryMd(''); openSummary(); }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
+                    style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
+                    title="Regenerate"
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="23 4 23 10 17 10"/>
+                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
+                    style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    {isAr ? 'طباعة / PDF' : 'Print / PDF'}
+                  </button>
+                  <button
+                    onClick={() => setSummaryOpen(false)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer"
+                    style={{ color: 'var(--color-muted)', background: 'var(--color-surface-2)' }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal body */}
+              <div id="summary-print-area" className="flex-1 overflow-y-auto px-6 py-5" style={{ color: 'var(--color-text)' }}>
+                {summaryLoading ? (
+                  <div className="flex flex-col items-center justify-center py-16 gap-4">
+                    <motion.div
+                      animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
+                      className="w-8 h-8 rounded-full"
+                      style={{ border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary)' }}
+                    />
+                    <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{isAr ? 'يتم إنشاء الملخص...' : 'Generating your summary...'}</p>
+                  </div>
+                ) : (
+                  <div className="prose prose-invert prose-sm max-w-none summary-content">
+                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                      {summaryMd}
+                    </ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

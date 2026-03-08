@@ -117,7 +117,8 @@ export function useStream() {
                     addMessage({
                       id:        genId(),
                       role:      'system',
-                      content:   `${ev.is_correct ? '📈' : '📉'} ${ev.is_correct ? '+' : ''}${delta}% mastery${delta > 0 ? ' — keep going!' : ' — try again'}`,
+                      content:   `${ev.is_correct ? '↑' : '↓'} ${ev.is_correct ? '+' : ''}${delta}% mastery${delta > 0 ? ' — keep going!' : ' — try again'}`,
+
                       timestamp: new Date().toISOString(),
                     });
                   }

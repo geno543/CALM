@@ -42,6 +42,7 @@ export const studentApi = {
 
 export const chatApi = {
   history: () => api.get('/chat/history'),
+  summary: () => api.post('/chat/summary'),
 };
 
 export default api;

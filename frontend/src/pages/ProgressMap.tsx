@@ -78,7 +78,7 @@ export default function ProgressMap() {
         <h1 className="text-base font-semibold">{isAr ? 'خريطة التقدم' : 'Progress Map'}</h1>
         {/* Streak + hints badge */}
         <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--color-muted)' }}>
-          <span>🔥 <strong style={{ color: 'var(--color-text)' }}>{streak_days ?? 1}</strong> {isAr ? 'يوم' : 'day streak'}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--color-warning)" style={{ flexShrink: 0 }}><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg><strong style={{ color: 'var(--color-text)' }}>{streak_days ?? 1}</strong> {isAr ? 'يوم' : 'day streak'}</span>
           <span>{isAr ? 'تلميح:' : 'Hints:'} <strong style={{ color: 'var(--color-accent)' }}>{total_hints ?? 0}</strong></span>
         </div>
       </div>

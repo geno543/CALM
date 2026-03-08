@@ -115,3 +115,33 @@ pre code { background: transparent; border: none; padding: 0; color: var(--color
 .prose-calm table  { width: 100%; border-collapse: collapse; }
 .prose-calm th, .prose-calm td { border: 1px solid var(--color-border); padding: 0.4em 0.75em; }
 .prose-calm th { background: var(--color-surface-2); color: var(--color-text-2); font-weight: 500; }
+
+/* ── Summary modal content ───────────────────────────────────────────────── */
+.summary-content { color: var(--color-text); line-height: 1.75; }
+.summary-content h1, .summary-content h2 { color: var(--color-text); font-weight: 700; margin: 1.2em 0 0.5em; font-size: 1.05em; padding-bottom: 0.35em; border-bottom: 1px solid var(--color-border); }
+.summary-content h3 { color: var(--color-text); font-weight: 600; margin: 1em 0 0.35em; font-size: 0.97em; }
+.summary-content p  { margin: 0.5em 0; }
+.summary-content ul, .summary-content ol { padding-left: 1.5em; margin: 0.5em 0; }
+.summary-content li { margin: 0.3em 0; color: var(--color-text); }
+.summary-content strong { color: var(--color-primary); font-weight: 600; }
+.summary-content code { font-size: 0.875em; background: var(--color-surface-2); padding: 0.1em 0.35em; border-radius: 4px; color: var(--color-accent); }
+
+/* ── Print styles (window.print() for PDF export) ────────────────────────── */
+@media print {
+  body * { visibility: hidden !important; }
+  #summary-print-area,
+  #summary-print-area * { visibility: visible !important; }
+  #summary-print-area {
+    position: fixed !important;
+    inset: 0 !important;
+    padding: 2rem !important;
+    background: #fff !important;
+    color: #111 !important;
+    font-family: 'Georgia', serif;
+    font-size: 12pt;
+    z-index: 99999;
+  }
+  #summary-print-area h1, #summary-print-area h2 { color: #111 !important; border-bottom: 1px solid #ccc !important; }
+  #summary-print-area code { background: #f4f4f4 !important; color: #333 !important; }
+  #summary-print-area .katex { color: #111 !important; }
+}

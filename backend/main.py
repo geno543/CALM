@@ -160,6 +160,60 @@ async def chat_history(current_user: dict = Depends(get_current_user)):
     return {"history": sess["chat_history"]}
 
 
+@app.post("/chat/summary", tags=["chat"])
+async def chat_summary(current_user: dict = Depends(get_current_user)):
+    """Generate an AI-powered session summary of concepts and rules learned."""
+    import re
+    import openai as _openai
+
+    sess    = get_session(current_user["username"])
+    history = sess.get("chat_history", [])
+
+    # Keep only user/assistant turns, last 30 messages max
+    turns = [m for m in history if m.get("role") in ("user", "assistant")][-30:]
+    if not turns:
+        return {"summary": "No session history yet — start chatting to generate a summary!"}
+
+    transcript = "\n".join(
+        f"{'Student' if m['role'] == 'user' else 'CALM'}: {m['content'][:800]}"
+        for m in turns
+    )
+
+    prompt = (
+        "You are an expert educational summarizer. "
+        "Given the following tutoring session transcript, produce a concise structured summary in Markdown. "
+        "Use these exact sections:\n"
+        "## Key Concepts Learned\n"
+        "## Problem-Solving Rules Practiced\n"
+        "## Common Mistakes to Watch For\n"
+        "## Recommended Next Steps\n\n"
+        "Be specific — reference actual mathematical content from the session. "
+        "Keep each section to 3-5 bullet points. Use $...$ for inline math, $$...$$ for display math.\n\n"
+        f"--- SESSION TRANSCRIPT ---\n{transcript}\n--- END TRANSCRIPT ---\n\n"
+        "Now write the summary:"
+    )
+
+    def _call_llm():
+        client = _openai.OpenAI(
+            api_key=calm.K2_API_KEY,
+            base_url=calm.K2_BASE_URL,
+        )
+        resp = client.chat.completions.create(
+            model="MBZUAI-IFM/K2-Think-v2",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=1200,
+        )
+        raw = resp.choices[0].message.content or ""
+        # Strip <think>...</think> block
+        raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+        return raw
+
+    loop    = asyncio.get_running_loop()
+    summary = await loop.run_in_executor(None, _call_llm)
+    return {"summary": summary}
+
+
 # ── Streaming Chat ────────────────────────────────────────────────────────────
 
 async def _stream_response(username: str, user_input: str, learning_mode: bool = True) -> AsyncGenerator[dict, None]:
