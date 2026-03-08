@@ -146,7 +146,7 @@ def select_chapter(user_input, current_file):
             }).content
         )
         selected = result.get("file", current_file)
-        if selected in stores:
+        if selected in CHAPTERS:
             return selected
     except Exception:
         pass
@@ -593,12 +593,18 @@ def prepare_chat(user_input, chat_history, student_concept_all, data_student):
     # (unreliable with reasoning models like K2-Think-v2). The evaluator's own
     # student_answered field decides whether BKT actually changes.
     if control.get("mode", "TUTOR_MODE") == "TUTOR_MODE" and last_ai_message:
+        # Truncate teacher_response — full STEP 0-6 is thousands of tokens
+        teacher_snippet = last_ai_message[-1500:] if len(last_ai_message) > 1500 else last_ai_message
+        print(f"[BKT] Evaluating | mastery={student_concept['P_mastery']:.3f} | input_len={len(user_input)} | teacher_len={len(teacher_snippet)}")
         try:
-            mastery_before = student_concept["P_mastery"]
-            eval_data = _parse_json(evaluator_chain.invoke({
+            raw_eval = evaluator_chain.invoke({
                 "student_response": user_input,
-                "teacher_response": last_ai_message,
-            }).content)
+                "teacher_response": teacher_snippet,
+            }).content
+            print(f"[BKT] Raw (first 300): {raw_eval[:300]}")
+            eval_data = _parse_json(raw_eval)
+            print(f"[BKT] Parsed: {eval_data}")
+            mastery_before = student_concept["P_mastery"]
             updated = update_dlm(eval_data, student_concept)
             student_concept = updated
             data_student["following_action"] = decide_next_action(student_concept)
@@ -608,8 +614,9 @@ def prepare_chat(user_input, chat_history, student_concept_all, data_student):
                 "mastery_before": mastery_before,
                 "mastery_after":  updated["P_mastery"],
             }
+            print(f"[BKT] {mastery_before:.3f} -> {updated['P_mastery']:.3f} | correct={updated.get('_is_correct')}")
         except Exception as e:
-            print(f"[Eval error: {e}]")
+            print(f"[BKT] Eval error: {e}")
 
     # Write updated BKT back into the full dict
     student_concept_all[selected_file] = student_concept
