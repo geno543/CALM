@@ -72,15 +72,29 @@ def get_context(pdf_file, query):
     return "\n\n".join(parts) if parts else "No context found."
 
 
+
 # ── JSON helper: strips markdown fences and <think> blocks before parsing ─────
 def _parse_json(content: str) -> dict:
-    """Strip <think>…</think> reasoning blocks and ```json``` fences, then parse JSON."""
+    """Robustly extract the first JSON object from a model response.
+
+    Handles:
+    - <think>…</think> reasoning preambles (K2-Think-v2)
+    - ```json … ``` markdown fences
+    - Extra prose before or after the JSON brace
+    """
     content = content.strip()
-    # K2-Think-v2 wraps its reasoning in <think>...</think> before the JSON
+    # 1. Remove <think>…</think> blocks entirely
     content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
+    # 2. Strip markdown code fences
     if content.startswith("```"):
         content = re.sub(r"^```[a-zA-Z]*\n?", "", content)
-        content = re.sub(r"\n?```$", "", content.strip())
+        content = re.sub(r"\n?```\s*$", "", content.strip())
+    content = content.strip()
+    # 3. If still not starting with '{', extract the first {...} block
+    if not content.startswith("{"):
+        match = re.search(r"\{.*\}", content, flags=re.DOTALL)
+        if match:
+            content = match.group(0)
     return json.loads(content.strip())
 
 
