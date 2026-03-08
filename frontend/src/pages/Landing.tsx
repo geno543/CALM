@@ -13,6 +13,10 @@ const TICKER_EN = [
   'BILINGUAL EN / AR',
   'THOMAS\'S CALCULUS',
   'K2-THINK POWERED',
+  'CALCULUS — LIVE NOW',
+  'BIOLOGY — COMING SOON',
+  'CHEMISTRY — COMING SOON',
+  'PHYSICS — COMING SOON',
 ];
 const TICKER_AR = [
   '7 مستويات إتقان',
@@ -23,6 +27,10 @@ const TICKER_AR = [
   'ثنائي اللغة',
   'كتاب Thomas\'s Calculus',
   'مدعوم بـ K2-Think',
+  'الحساب — متاح الآن',
+  'الأحياء — قريبا',
+  'الكيمياء — قريبا',
+  'الفيزياء — قريبا',
 ];
 
 function Ticker({ isAr }: { isAr: boolean }) {
@@ -79,10 +87,10 @@ const COMPARE = {
 export default function Landing() {
   const navigate = useNavigate();
   const { isAr, toggle } = useLang();
-  const { isAuthed } = useAuthStore();
+  const { isAuthed, logout } = useAuthStore();
   const pipeline = isAr ? PIPELINE_AR : PIPELINE_EN;
 
-  const go = () => navigate(isAuthed ? '/chat' : '/login');
+  const go = () => navigate(isAuthed ? '/subjects' : '/login');
 
   return (
     <div className="min-h-dvh" style={{ background: 'var(--color-ink)', color: 'var(--color-text)', fontFamily: 'var(--font-sans)' }}>
@@ -160,8 +168,8 @@ export default function Landing() {
             dir={isAr ? 'rtl' : 'ltr'}
           >
             {isAr
-              ? 'CALM هو نظام تدريس ذكاء اصطناعي عصبي-رمزي يقلص الفجوة التعليمية في STEM من خلال تعليم شخصي على مستوى الدكتوراه  مبني للطلاب في كل مكان حول العالم.'
-              : 'CALM is a neuro-symbolic AI tutor that closes the STEM achievement gap through PhD-level personalized mentorship. Built for under-resourced students worldwide.'}
+              ? 'CALM هو نظام تدريس ذكاء اصطناعي عصبي-رمزي يقلص الفجوة التعليمية في STEM من خلال تعليم شخصي على مستوى الدكتوراه  يغطي الحساب والأحياء والكيمياء والفيزياء. مبني للطلاب في كل مكان حول العالم.'
+              : 'CALM is a neuro-symbolic AI tutor that closes the STEM achievement gap through PhD-level personalized mentorship — covering Calculus, Biology, Chemistry, and Physics. Built for under-resourced students worldwide.'}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pb-12">
@@ -415,9 +423,15 @@ export default function Landing() {
             <button onClick={() => navigate('/progress')} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
               {isAr ? 'التقدم' : 'Progress'}
             </button>
-            <button onClick={() => navigate('/login')} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
-              {isAr ? 'دخول' : 'Login'}
-            </button>
+            {isAuthed ? (
+              <button onClick={() => { logout(); navigate('/'); }} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
+                {isAr ? 'خروج' : 'Logout'}
+              </button>
+            ) : (
+              <button onClick={() => navigate('/login')} className="cursor-pointer hover:text-[var(--color-primary)] transition-colors">
+                {isAr ? 'دخول' : 'Login'}
+              </button>
+            )}
           </div>
         </div>
       </footer>

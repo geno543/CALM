@@ -6,6 +6,7 @@ import Landing              from './pages/Landing';
 import AuthPage             from './pages/AuthPage';
 import ChatLayout           from './pages/ChatLayout';
 import ProgressMap          from './pages/ProgressMap';
+import SubjectSelect        from './pages/SubjectSelect';
 
 // ── Error Boundary ────────────────────────────────────────────────────────────
 class ErrorBoundary extends React.Component<
@@ -66,6 +67,14 @@ export default function App() {
           <Routes>
             <Route path="/"         element={<Landing />} />
             <Route path="/login"    element={<AuthPage />} />
+            <Route
+              path="/subjects"
+              element={
+                <ProtectedRoute>
+                  <SubjectSelect />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/chat"
               element={
