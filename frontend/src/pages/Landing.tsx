@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { motion }      from 'framer-motion';
 import { useLang }     from '../contexts/LanguageContext';
 import { useAuthStore } from '../stores/authStore';
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const STEPS = [
   {
@@ -15,8 +15,8 @@ const STEPS = [
       </svg>
     ),
     color: 'var(--color-primary)',
-    en: { title: 'RAG Grounding', desc: 'Every explanation is retrieved directly from Thomas\'s Calculus — grounded in verified knowledge, never hallucinated.' },
-    ar: { title: 'تأسيس بالاسترجاع', desc: 'كل شرح مستند إلى مصادر موثّقة من كتاب Thomas\'s Calculus — لا توهمات، فقط معرفة دقيقة.' },
+    en: { title: 'RAG Grounding', desc: 'Every explanation is retrieved directly from Thomas\'s Calculus â€” grounded in verified knowledge, never hallucinated.' },
+    ar: { title: 'ØªØ£Ø³ÙŠØ³ Ø¨Ø§Ù„Ø§Ø³ØªØ±Ø¬Ø§Ø¹', desc: 'ÙƒÙ„ Ø´Ø±Ø­ Ù…Ø³ØªÙ†Ø¯ Ø¥Ù„Ù‰ Ù…ØµØ§Ø¯Ø± Ù…ÙˆØ«Ù‘Ù‚Ø© Ù…Ù† ÙƒØªØ§Ø¨ Thomas\'s Calculus â€” Ù„Ø§ ØªÙˆÙ‡Ù…Ø§ØªØŒ ÙÙ‚Ø· Ù…Ø¹Ø±ÙØ© Ø¯Ù‚ÙŠÙ‚Ø©.' },
   },
   {
     num: '02',
@@ -26,8 +26,8 @@ const STEPS = [
       </svg>
     ),
     color: 'var(--color-accent)',
-    en: { title: 'Bayesian Learner Model', desc: 'Your knowledge state is tracked in real-time across 7 mastery levels using Bayesian Knowledge Tracing — adapting to you at every step.' },
-    ar: { title: 'نموذج المتعلم البايزي', desc: 'يتتبع النظام حالة معرفتك عبر 7 مستويات إتقان و يكيّف الجلسة لك بشكل فوري.' },
+    en: { title: 'Bayesian Learner Model', desc: 'Your knowledge state is tracked in real-time across 7 mastery levels using Bayesian Knowledge Tracing â€” adapting to you at every step.' },
+    ar: { title: 'Ù†Ù…ÙˆØ°Ø¬ Ø§Ù„Ù…ØªØ¹Ù„Ù… Ø§Ù„Ø¨Ø§ÙŠØ²ÙŠ', desc: 'ÙŠØªØªØ¨Ø¹ Ø§Ù„Ù†Ø¸Ø§Ù… Ø­Ø§Ù„Ø© Ù…Ø¹Ø±ÙØªÙƒ Ø¹Ø¨Ø± 7 Ù…Ø³ØªÙˆÙŠØ§Øª Ø¥ØªÙ‚Ø§Ù† Ùˆ ÙŠÙƒÙŠÙ‘Ù Ø§Ù„Ø¬Ù„Ø³Ø© Ù„Ùƒ Ø¨Ø´ÙƒÙ„ ÙÙˆØ±ÙŠ.' },
   },
   {
     num: '03',
@@ -39,7 +39,7 @@ const STEPS = [
     ),
     color: '#D2A8FF',
     en: { title: 'Socratic Engine', desc: 'You are never given direct answers. CALM asks targeted questions that guide your reasoning from first principles to mastery.' },
-    ar: { title: 'المحرك السقراطي', desc: 'لا إجابات مباشرة — يطرح CALM أسئلة موجّهة تبني فهمك من المبادئ الأولى حتى الإتقان.' },
+    ar: { title: 'Ø§Ù„Ù…Ø­Ø±Ùƒ Ø§Ù„Ø³Ù‚Ø±Ø§Ø·ÙŠ', desc: 'Ù„Ø§ Ø¥Ø¬Ø§Ø¨Ø§Øª Ù…Ø¨Ø§Ø´Ø±Ø© â€” ÙŠØ·Ø±Ø­ CALM Ø£Ø³Ø¦Ù„Ø© Ù…ÙˆØ¬Ù‘Ù‡Ø© ØªØ¨Ù†ÙŠ ÙÙ‡Ù…Ùƒ Ù…Ù† Ø§Ù„Ù…Ø¨Ø§Ø¯Ø¦ Ø§Ù„Ø£ÙˆÙ„Ù‰ Ø­ØªÙ‰ Ø§Ù„Ø¥ØªÙ‚Ø§Ù†.' },
   },
 ];
 
@@ -50,10 +50,10 @@ const STATS = [
         <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
       </svg>
     ),
-    value: '1.2–1.8',
+    value: '1.2â€“1.8',
     unit: 'd',
     en: 'Target Effect Size',
-    ar: 'حجم الأثر المستهدف',
+    ar: 'Ø­Ø¬Ù… Ø§Ù„Ø£Ø«Ø± Ø§Ù„Ù…Ø³ØªÙ‡Ø¯Ù',
   },
   {
     icon: (
@@ -64,7 +64,7 @@ const STATS = [
     value: '7',
     unit: '',
     en: 'Mastery Levels',
-    ar: 'مستويات الإتقان',
+    ar: 'Ù…Ø³ØªÙˆÙŠØ§Øª Ø§Ù„Ø¥ØªÙ‚Ø§Ù†',
   },
   {
     icon: (
@@ -75,7 +75,7 @@ const STATS = [
     value: '< 5%',
     unit: '',
     en: 'Hallucination Rate',
-    ar: 'معدل التوهمات',
+    ar: 'Ù…Ø¹Ø¯Ù„ Ø§Ù„ØªÙˆÙ‡Ù…Ø§Øª',
   },
   {
     icon: (
@@ -86,26 +86,26 @@ const STATS = [
     value: '2',
     unit: ' lang',
     en: 'Bilingual EN / AR',
-    ar: 'ثنائي اللغة',
+    ar: 'Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©',
   },
 ];
 
 const COMPARE = [
   {
     en: ['Generic answers with no grounding', 'No memory of what you know', 'Gives you the answer directly', 'One language, one style'],
-    ar: ['إجابات عامة بدون مصادر', 'لا ذاكرة لمعرفتك', 'تجيب مباشرة دون توجيه', 'لغة واحدة وأسلوب واحد'],
+    ar: ['Ø¥Ø¬Ø§Ø¨Ø§Øª Ø¹Ø§Ù…Ø© Ø¨Ø¯ÙˆÙ† Ù…ØµØ§Ø¯Ø±', 'Ù„Ø§ Ø°Ø§ÙƒØ±Ø© Ù„Ù…Ø¹Ø±ÙØªÙƒ', 'ØªØ¬ÙŠØ¨ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¯ÙˆÙ† ØªÙˆØ¬ÙŠÙ‡', 'Ù„ØºØ© ÙˆØ§Ø­Ø¯Ø© ÙˆØ£Ø³Ù„ÙˆØ¨ ÙˆØ§Ø­Ø¯'],
   },
   {
-    en: ['RAG-grounded in Thomas\'s Calculus', 'Bayesian model of your knowledge state', 'Guides you with Socratic questions', 'Fully bilingual — Arabic & English'],
-    ar: ['مرتكز على كتاب Thomas\'s Calculus', 'نموذج بايزي لمعرفتك الشخصية', 'يوجّهك بأسئلة سقراطية', 'ثنائي اللغة: عربي وإنجليزي'],
+    en: ['RAG-grounded in Thomas\'s Calculus', 'Bayesian model of your knowledge state', 'Guides you with Socratic questions', 'Fully bilingual â€” Arabic & English'],
+    ar: ['Ù…Ø±ØªÙƒØ² Ø¹Ù„Ù‰ ÙƒØªØ§Ø¨ Thomas\'s Calculus', 'Ù†Ù…ÙˆØ°Ø¬ Ø¨Ø§ÙŠØ²ÙŠ Ù„Ù…Ø¹Ø±ÙØªÙƒ Ø§Ù„Ø´Ø®ØµÙŠØ©', 'ÙŠÙˆØ¬Ù‘Ù‡Ùƒ Ø¨Ø£Ø³Ø¦Ù„Ø© Ø³Ù‚Ø±Ø§Ø·ÙŠØ©', 'Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©: Ø¹Ø±Ø¨ÙŠ ÙˆØ¥Ù†Ø¬Ù„ÙŠØ²ÙŠ'],
   },
 ];
 
 const ARCH = [
-  { key: 'RAG',  color: 'var(--color-primary)',  label: 'RAG Layer',     labelAr: 'طبقة الاسترجاع' },
-  { key: 'BKT',  color: 'var(--color-accent)',   label: 'BKT Tracker',   labelAr: 'متتبع BKT' },
-  { key: 'CTRL', color: 'var(--color-warning)',  label: 'Controller',    labelAr: 'المتحكم' },
-  { key: 'MCSE', color: '#D2A8FF',              label: 'MCSE Engine',   labelAr: 'محرك MCSE' },
+  { key: 'RAG',  color: 'var(--color-primary)',  label: 'RAG Layer',     labelAr: 'Ø·Ø¨Ù‚Ø© Ø§Ù„Ø§Ø³ØªØ±Ø¬Ø§Ø¹' },
+  { key: 'BKT',  color: 'var(--color-accent)',   label: 'BKT Tracker',   labelAr: 'Ù…ØªØªØ¨Ø¹ BKT' },
+  { key: 'CTRL', color: 'var(--color-warning)',  label: 'Controller',    labelAr: 'Ø§Ù„Ù…ØªØ­ÙƒÙ…' },
+  { key: 'MCSE', color: '#D2A8FF',              label: 'MCSE Engine',   labelAr: 'Ù…Ø­Ø±Ùƒ MCSE' },
 ];
 
 const fadeUp = {
@@ -113,7 +113,7 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
 };
 
-// ── Component ──────────────────────────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function Landing() {
   const navigate        = useNavigate();
@@ -125,7 +125,7 @@ export default function Landing() {
   return (
     <div className="min-h-dvh" style={{ background: 'var(--color-ink)', color: 'var(--color-text)' }}>
 
-      {/* ── Nav ──────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <nav
         className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 backdrop-blur-md"
         style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(13,17,23,0.85)' }}
@@ -142,7 +142,7 @@ export default function Landing() {
             className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
           >
-            {isAr ? 'للطلاب' : 'For Students'}
+            {isAr ? 'Ù„Ù„Ø·Ù„Ø§Ø¨' : 'For Students'}
           </span>
         </div>
 
@@ -152,19 +152,19 @@ export default function Landing() {
             className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
           >
-            {isAr ? 'EN' : 'عربي'}
+            {isAr ? 'EN' : 'Ø¹Ø±Ø¨ÙŠ'}
           </button>
           <button
             onClick={go}
             className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer"
             style={{ background: 'var(--color-primary)', color: 'var(--color-ink)', boxShadow: '0 0 16px rgba(88,166,255,0.25)' }}
           >
-            {isAuthed ? (isAr ? 'استمر التعلم' : 'Continue Learning') : (isAr ? 'ابدأ مجاناً' : 'Get Started Free')}
+            {isAuthed ? (isAr ? 'Ø§Ø³ØªÙ…Ø± Ø§Ù„ØªØ¹Ù„Ù…' : 'Continue Learning') : (isAr ? 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ø§Ù‹' : 'Get Started Free')}
           </button>
         </div>
       </nav>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div style={{ background: 'radial-gradient(ellipse 90% 55% at 50% 0%, rgba(31,59,94,0.7) 0%, transparent 70%)' }}>
         <motion.section
           className="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center"
@@ -180,7 +180,7 @@ export default function Landing() {
               className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase"
               style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
             >
-              {isAr ? 'نظام التدريس المعرفي' : 'Cognitive Apprenticeship System'}
+              {isAr ? 'Ù†Ø¸Ø§Ù… Ø§Ù„ØªØ¯Ø±ÙŠØ³ Ø§Ù„Ù…Ø¹Ø±ÙÙŠ' : 'Cognitive Apprenticeship System'}
             </span>
           </motion.div>
 
@@ -192,10 +192,10 @@ export default function Landing() {
           >
             {isAr ? (
               <>
-                ماذا لو تعلّم كل طالب
+                Ù…Ø§Ø°Ø§ Ù„Ùˆ ØªØ¹Ù„Ù‘Ù… ÙƒÙ„ Ø·Ø§Ù„Ø¨
                 <br />
                 <span style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  بمستوى أفضل الجامعات؟
+                  Ø¨Ù…Ø³ØªÙˆÙ‰ Ø£ÙØ¶Ù„ Ø§Ù„Ø¬Ø§Ù…Ø¹Ø§ØªØŸ
                 </span>
               </>
             ) : (
@@ -215,8 +215,8 @@ export default function Landing() {
             style={{ color: 'var(--color-muted)' }}
           >
             {isAr
-              ? 'CALM نظام تدريس ذكاء اصطناعي عصبي-رمزي يُقلّص الفجوة التعليمية في مجالات STEM من خلال تعليم شخصي على مستوى الدكتوراه.'
-              : 'CALM is a neuro-symbolic AI tutoring system that closes the STEM achievement gap through PhD-level personalized mentorship — built for under-resourced students worldwide.'}
+              ? 'CALM Ù†Ø¸Ø§Ù… ØªØ¯Ø±ÙŠØ³ Ø°ÙƒØ§Ø¡ Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ø¹ØµØ¨ÙŠ-Ø±Ù…Ø²ÙŠ ÙŠÙÙ‚Ù„Ù‘Øµ Ø§Ù„ÙØ¬ÙˆØ© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ© ÙÙŠ Ù…Ø¬Ø§Ù„Ø§Øª STEM Ù…Ù† Ø®Ù„Ø§Ù„ ØªØ¹Ù„ÙŠÙ… Ø´Ø®ØµÙŠ Ø¹Ù„Ù‰ Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¯ÙƒØªÙˆØ±Ø§Ù‡.'
+              : 'CALM is a neuro-symbolic AI tutoring system that closes the STEM achievement gap through PhD-level personalized mentorship â€” built for under-resourced students worldwide.'}
           </motion.p>
 
           <motion.p
@@ -225,8 +225,8 @@ export default function Landing() {
             style={{ color: 'var(--color-subtle, #484f58)' }}
           >
             {isAr
-              ? 'مبنيّ على Thomas\'s Calculus · مدعوم بـ K2-Think · ثنائي اللغة'
-              : "Built on Thomas's Calculus · Powered by K2-Think AI · Bilingual EN / AR"}
+              ? 'Ù…Ø¨Ù†ÙŠÙ‘ Ø¹Ù„Ù‰ Thomas\'s Calculus Â· Ù…Ø¯Ø¹ÙˆÙ… Ø¨Ù€ K2-Think Â· Ø«Ù†Ø§Ø¦ÙŠ Ø§Ù„Ù„ØºØ©'
+              : "Built on Thomas's Calculus Â· Powered by K2-Think AI Â· Bilingual EN / AR"}
           </motion.p>
 
           <motion.div custom={4} variants={fadeUp} className="flex flex-wrap justify-center gap-3">
@@ -237,7 +237,7 @@ export default function Landing() {
               className="px-8 py-3 rounded-xl text-base font-semibold transition-all cursor-pointer"
               style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
             >
-              {isAr ? 'ابدأ التعلم الآن' : 'Start Learning Now'}
+              {isAr ? 'Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªØ¹Ù„Ù… Ø§Ù„Ø¢Ù†' : 'Start Learning Now'}
             </motion.button>
             <motion.button
               onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
@@ -246,13 +246,13 @@ export default function Landing() {
               className="px-8 py-3 rounded-xl text-base font-medium cursor-pointer"
               style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
             >
-              {isAr ? 'كيف يعمل؟' : 'How it works'}
+              {isAr ? 'ÙƒÙŠÙ ÙŠØ¹Ù…Ù„ØŸ' : 'How it works'}
             </motion.button>
           </motion.div>
         </motion.section>
       </div>
 
-      {/* ── Stats ────────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="max-w-5xl mx-auto px-6 py-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {STATS.map((s, i) => (
@@ -279,7 +279,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── How it works ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ How it works â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="how" className="max-w-5xl mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -288,10 +288,10 @@ export default function Landing() {
           className="text-center mb-14"
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-primary)' }}>
-            {isAr ? 'آلية العمل' : 'How It Works'}
+            {isAr ? 'Ø¢Ù„ÙŠØ© Ø§Ù„Ø¹Ù…Ù„' : 'How It Works'}
           </p>
           <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'ثلاث طبقات من الذكاء' : 'Three Layers of Intelligence'}
+            {isAr ? 'Ø«Ù„Ø§Ø« Ø·Ø¨Ù‚Ø§Øª Ù…Ù† Ø§Ù„Ø°ÙƒØ§Ø¡' : 'Three Layers of Intelligence'}
           </h2>
         </motion.div>
 
@@ -328,7 +328,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Comparison ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ Comparison â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -337,10 +337,10 @@ export default function Landing() {
           className="text-center mb-12"
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-accent)' }}>
-            {isAr ? 'لماذا CALM؟' : 'Why CALM?'}
+            {isAr ? 'Ù„Ù…Ø§Ø°Ø§ CALMØŸ' : 'Why CALM?'}
           </p>
           <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'ليس مجرد نموذج لغوي آخر' : 'Not just another chatbot'}
+            {isAr ? 'Ù„ÙŠØ³ Ù…Ø¬Ø±Ø¯ Ù†Ù…ÙˆØ°Ø¬ Ù„ØºÙˆÙŠ Ø¢Ø®Ø±' : 'Not just another chatbot'}
           </h2>
         </motion.div>
 
@@ -350,23 +350,23 @@ export default function Landing() {
           viewport={{ once: true }}
           className="grid sm:grid-cols-2 gap-4"
         >
-          {/* Left — generic AI */}
+          {/* Left â€” generic AI */}
           <div
             className="rounded-2xl p-6 space-y-3"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
           >
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'دردشة ذكاء اصطناعي عامة' : 'Generic AI Chat'}
+              {isAr ? 'Ø¯Ø±Ø¯Ø´Ø© Ø°ÙƒØ§Ø¡ Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ø¹Ø§Ù…Ø©' : 'Generic AI Chat'}
             </p>
             {COMPARE[0][isAr ? 'ar' : 'en'].map((item, i) => (
               <div key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--color-muted)' }}>
-                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-danger)', flexShrink: 0 }}>✕</span>
+                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-danger)', flexShrink: 0 }}>âœ•</span>
                 {item}
               </div>
             ))}
           </div>
 
-          {/* Right — CALM */}
+          {/* Right â€” CALM */}
           <div
             className="rounded-2xl p-6 space-y-3"
             style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)' }}
@@ -376,7 +376,7 @@ export default function Landing() {
             </p>
             {COMPARE[1][isAr ? 'ar' : 'en'].map((item, i) => (
               <div key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--color-text)' }}>
-                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-accent)', flexShrink: 0 }}>✓</span>
+                <span className="mt-0.5 font-bold" style={{ color: 'var(--color-accent)', flexShrink: 0 }}>âœ“</span>
                 {item}
               </div>
             ))}
@@ -384,7 +384,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* ── Architecture ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ Architecture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -393,10 +393,10 @@ export default function Landing() {
           className="text-center mb-10"
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-warning)' }}>
-            {isAr ? 'البنية التقنية' : 'Under the Hood'}
+            {isAr ? 'Ø§Ù„Ø¨Ù†ÙŠØ© Ø§Ù„ØªÙ‚Ù†ÙŠØ©' : 'Under the Hood'}
           </p>
           <h2 className="text-3xl font-bold tracking-tight">
-            {isAr ? 'بنية النظام' : 'System Architecture'}
+            {isAr ? 'Ø¨Ù†ÙŠØ© Ø§Ù„Ù†Ø¸Ø§Ù…' : 'System Architecture'}
           </h2>
         </motion.div>
 
@@ -413,7 +413,7 @@ export default function Landing() {
                 className="px-4 py-2.5 rounded-xl text-xs font-medium"
                 style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
               >
-                {isAr ? 'إدخال الطالب' : 'Student Input'}
+                {isAr ? 'Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø·Ø§Ù„Ø¨' : 'Student Input'}
               </div>
             </div>
 
@@ -445,7 +445,7 @@ export default function Landing() {
                   className="px-4 py-2.5 rounded-xl text-xs font-medium"
                   style={{ background: 'rgba(61,220,151,0.1)', border: '1px solid var(--color-accent)', color: 'var(--color-accent)' }}
                 >
-                  {isAr ? 'الاستجابة' : 'Response'}
+                  {isAr ? 'Ø§Ù„Ø§Ø³ØªØ¬Ø§Ø¨Ø©' : 'Response'}
                 </div>
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* ── CTA Banner ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ CTA Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div style={{ background: 'linear-gradient(135deg, rgba(31,59,94,0.6) 0%, rgba(61,220,151,0.08) 100%)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -462,21 +462,21 @@ export default function Landing() {
           className="max-w-5xl mx-auto px-6 py-20 text-center"
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-primary)' }}>
-            {isAr ? 'الفرصة للجميع' : 'Equal Access'}
+            {isAr ? 'Ø§Ù„ÙØ±ØµØ© Ù„Ù„Ø¬Ù…ÙŠØ¹' : 'Equal Access'}
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
             {isAr
-              ? 'الذكاء موجود في كل مكان.'
+              ? 'Ø§Ù„Ø°ÙƒØ§Ø¡ Ù…ÙˆØ¬ÙˆØ¯ ÙÙŠ ÙƒÙ„ Ù…ÙƒØ§Ù†.'
               : 'Intelligence is everywhere.'}
             <br />
             <span style={{ color: 'var(--color-accent)' }}>
-              {isAr ? 'الفرصة يجب أن تكون كذلك.' : 'Opportunity should be too.'}
+              {isAr ? 'Ø§Ù„ÙØ±ØµØ© ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† ÙƒØ°Ù„Ùƒ.' : 'Opportunity should be too.'}
             </span>
           </h2>
           <p className="mb-8 text-sm max-w-xl mx-auto leading-relaxed" style={{ color: 'var(--color-muted)' }}>
             {isAr
-              ? 'انضم إلى CALM وابدأ رحلتك نحو إتقان الرياضيات بمستوى الجامعات العالمية — بلغتك، وبوتيرتك الخاصة.'
-              : 'Join CALM and begin your journey to world-class calculus mastery — at your own pace, in your own language.'}
+              ? 'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ CALM ÙˆØ§Ø¨Ø¯Ø£ Ø±Ø­Ù„ØªÙƒ Ù†Ø­Ùˆ Ø¥ØªÙ‚Ø§Ù† Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª Ø¨Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¬Ø§Ù…Ø¹Ø§Øª Ø§Ù„Ø¹Ø§Ù„Ù…ÙŠØ© â€” Ø¨Ù„ØºØªÙƒØŒ ÙˆØ¨ÙˆØªÙŠØ±ØªÙƒ Ø§Ù„Ø®Ø§ØµØ©.'
+              : 'Join CALM and begin your journey to world-class calculus mastery â€” at your own pace, in your own language.'}
           </p>
           <motion.button
             onClick={go}
@@ -485,12 +485,12 @@ export default function Landing() {
             className="px-12 py-3.5 rounded-xl text-base font-semibold cursor-pointer"
             style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
           >
-            {isAr ? 'ابدأ مجاناً' : 'Start for Free'}
+            {isAr ? 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ø§Ù‹' : 'Start for Free'}
           </motion.button>
         </motion.section>
       </div>
 
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-ink)' }}>
         <div className="max-w-5xl mx-auto px-6 py-12 grid sm:grid-cols-3 gap-8 text-sm">
           <div>
@@ -500,23 +500,23 @@ export default function Landing() {
             </div>
             <p className="text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
               {isAr
-                ? 'نظام تدريس معرفي بالذكاء الاصطناعي للطلاب حول العالم.'
-                : 'Cognitive Apprenticeship via Large Language Models — built for students worldwide.'}
+                ? 'Ù†Ø¸Ø§Ù… ØªØ¯Ø±ÙŠØ³ Ù…Ø¹Ø±ÙÙŠ Ø¨Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ù„Ù„Ø·Ù„Ø§Ø¨ Ø­ÙˆÙ„ Ø§Ù„Ø¹Ø§Ù„Ù….'
+                : 'Cognitive Apprenticeship via Large Language Models â€” built for students worldwide.'}
             </p>
           </div>
           <div>
             <p className="font-semibold mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'روابط سريعة' : 'Quick Links'}
+              {isAr ? 'Ø±ÙˆØ§Ø¨Ø· Ø³Ø±ÙŠØ¹Ø©' : 'Quick Links'}
             </p>
             <ul className="space-y-2 text-xs" style={{ color: 'var(--color-muted)' }}>
-              <li><button onClick={go} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'الدردشة' : 'Start Chat'}</button></li>
-              <li><button onClick={() => navigate('/progress')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'خريطة التقدم' : 'Progress Map'}</button></li>
-              <li><button onClick={() => navigate('/login')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'تسجيل الدخول' : 'Sign In'}</button></li>
+              <li><button onClick={go} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'Ø§Ù„Ø¯Ø±Ø¯Ø´Ø©' : 'Start Chat'}</button></li>
+              <li><button onClick={() => navigate('/progress')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'Ø®Ø±ÙŠØ·Ø© Ø§Ù„ØªÙ‚Ø¯Ù…' : 'Progress Map'}</button></li>
+              <li><button onClick={() => navigate('/login')} className="hover:text-[var(--color-primary)] transition-colors cursor-pointer">{isAr ? 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„' : 'Sign In'}</button></li>
             </ul>
           </div>
           <div>
             <p className="font-semibold mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>
-              {isAr ? 'مبنيّ بـ' : 'Built With'}
+              {isAr ? 'Ù…Ø¨Ù†ÙŠÙ‘ Ø¨Ù€' : 'Built With'}
             </p>
             <ul className="space-y-2 text-xs" style={{ color: 'var(--color-muted)' }}>
               <li>K2-Think-v2 (MBZUAI-IFM)</li>
@@ -526,288 +526,10 @@ export default function Landing() {
           </div>
         </div>
         <div className="text-center pb-6 text-xs" style={{ color: 'var(--color-subtle, #484f58)' }}>
-          CALM — 2026
+          CALM â€” 2026
         </div>
       </footer>
     </div>
   );
 }
 
-
-const FLOW_STEPS = [
-  {
-    icon: 'RAG',
-    en: { title: 'RAG Grounding', desc: 'Every explanation is retrieved from Thomas\'s Calculus — no hallucinations, only verified knowledge.' },
-    ar: { title: 'تأسيس بالاسترجاع', desc: 'كل شرح مستند إلى كتاب Thomas\'s Calculus — لا توهمات، فقط معرفة موثقة.' },
-  },
-  {
-    icon: 'BKT',
-    en: { title: 'Bayesian Learner Model', desc: 'Your knowledge state is tracked in real-time across 7 mastery levels using Bayesian Knowledge Tracing.' },
-    ar: { title: 'نموذج المتعلم البايزي', desc: 'تتبع حالة معرفتك في الوقت الفعلي عبر 7 مستويات إتقان باستخدام تتبع المعرفة البايزي.' },
-  },
-  {
-    icon: 'SQ',
-    en: { title: 'Socratic Engine', desc: 'Never given direct answers — MCSE asks targeted questions to build your reasoning from first principles.' },
-    ar: { title: 'المحرك السقراطي', desc: 'لا إجابات مباشرة — يطرح MCSE أسئلة موجهة لبناء تفكيرك من المبادئ الأولى.' },
-  },
-];
-
-const STATS = [
-  { value: 'd = 1.2–1.8', en: 'Target Effect Size', ar: 'حجم الأثر المستهدف' },
-  { value: '7',           en: 'Mastery Levels',     ar: 'مستويات الإتقان' },
-  { value: '< 5%',        en: 'Hallucination Rate', ar: 'معدل التوهمات' },
-  { value: '6',           en: 'Calculus Chapters',  ar: 'فصول الحساب' },
-];
-
-const ARCH = [
-  { key: 'RAG',  color: 'var(--color-primary)',  label: 'RAG Layer',       labelAr: 'طبقة الاسترجاع' },
-  { key: 'CRI',  color: 'var(--color-accent)',   label: 'CRI Verifier',    labelAr: 'موثق CRI' },
-  { key: 'DLM',  color: 'var(--color-warning)',  label: 'DLM Tracker',     labelAr: 'متتبع DLM' },
-  { key: 'MCSE', color: '#D2A8FF',               label: 'MCSE Engine',     labelAr: 'محرك MCSE' },
-];
-
-const fadeUp = {
-  hidden:  { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
-
-export default function Landing() {
-  const navigate  = useNavigate();
-  const { isAr, toggle } = useLang();
-  const { isAuthed } = useAuthStore();
-
-  const go = () => navigate(isAuthed ? '/chat' : '/login');
-
-  return (
-    <div className="min-h-dvh" style={{ background: 'var(--color-ink)', color: 'var(--color-text)' }}>
-      {/* ── Nav ────────────────────────────────────────────────────────────── */}
-      <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 backdrop-blur-md"
-        style={{ borderBottom: '1px solid var(--color-border)', background: '#0D111799' }}
-      >
-        <div className="flex items-center gap-2">
-          <span className="font-semibold tracking-tight">CALM</span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggle}
-            className="px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }}
-          >
-            {isAr ? 'EN' : 'عربي'}
-          </button>
-          <button
-            onClick={go}
-            className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
-          >
-            {isAuthed ? (isAr ? 'استمر التعلم' : 'Continue Learning') : (isAr ? 'ابدأ' : 'Get Started')}
-          </button>
-        </div>
-      </nav>
-
-      <main className="max-w-5xl mx-auto px-6">
-        {/* ── Hero ───────────────────────────────────────────────────────── */}
-        <motion.section
-          className="pt-24 pb-20 text-center"
-          initial="hidden" animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
-        >
-          <motion.div variants={fadeUp} className="flex justify-center mb-6">
-            <span
-              className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase"
-              style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
-            >
-              {isAr ? 'نظام التدريس المعرفي' : 'Cognitive Apprenticeship System'}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            variants={fadeUp}
-            className="text-5xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-5"
-            dir={isAr ? 'rtl' : 'ltr'}
-          >
-            {isAr ? (
-              <>
-                ماذا لو تعلّم كل طالب
-                <br />
-                <span style={{ color: 'var(--color-primary)' }}>بمستوى أفضل الجامعات؟</span>
-              </>
-            ) : (
-              <>
-                What if every student learned at{' '}
-                <br />
-                <span style={{ color: 'var(--color-primary)' }}>the world&apos;s top schools?</span>
-              </>
-            )}
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
-            style={{ color: 'var(--color-muted)' }}
-          >
-            {isAr
-              ? 'CALM هو نظام تدريس ذكاء اصطناعي عصبي-رمزي يُقلّص الفجوة التعليمية في مجالات STEM من خلال تعليم شخصي يصل إلى مستوى الدكتوراه.'
-              : 'CALM is a neuro-symbolic AI tutoring system that reduces the STEM achievement gap through PhD-level personalized mentorship — built for under-resourced students worldwide.'}
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-3">
-            <motion.button
-              onClick={go}
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              className="px-8 py-3 rounded-xl text-base font-semibold transition-all cursor-pointer"
-              style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
-            >
-              {isAr ? 'ابدأ التعلم الآن' : 'Start Learning Now'}
-            </motion.button>
-            <motion.button
-              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              className="px-8 py-3 rounded-xl text-base font-medium cursor-pointer"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-2)' }}
-            >
-              {isAr ? 'كيف يعمل؟' : 'How it works'}
-            </motion.button>
-          </motion.div>
-        </motion.section>
-
-        {/* ── Stats ──────────────────────────────────────────────────────── */}
-        <motion.section
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y"
-          style={{ borderColor: 'var(--color-border)' }}
-        >
-          {STATS.map((s) => (
-            <div key={s.value} className="text-center py-4">
-              <div className="text-3xl font-extrabold tracking-tight mb-1" style={{ color: 'var(--color-primary)' }}>
-                {s.value}
-              </div>
-              <div className="text-xs" style={{ color: 'var(--color-muted)' }}>
-                {isAr ? s.ar : s.en}
-              </div>
-            </div>
-          ))}
-        </motion.section>
-
-        {/* ── How it works ───────────────────────────────────────────────── */}
-        <section id="how" className="py-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="text-3xl font-bold mb-12 text-center"
-          >
-            {isAr ? 'كيف يعمل النظام؟' : 'How CALM Works'}
-          </motion.h2>
-
-          <div className="grid sm:grid-cols-3 gap-5">
-            {FLOW_STEPS.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="rounded-xl p-6 space-y-3"
-                style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-              >
-                <div className="text-3xl">{step.icon}</div>
-                <h3 className="font-semibold text-base">{isAr ? step.ar.title : step.en.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                  {isAr ? step.ar.desc : step.en.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Architecture pipeline ──────────────────────────────────────── */}
-        <section className="py-12 pb-20">
-          <motion.h2
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            className="text-2xl font-bold mb-8 text-center"
-          >
-            {isAr ? 'بنية النظام' : 'System Architecture'}
-          </motion.h2>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="rounded-2xl p-8 flex flex-wrap justify-center items-center gap-3"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-          >
-            {/* Student Input */}
-            <div className="text-center">
-              <div
-                className="px-4 py-2 rounded-lg text-sm font-medium mb-1"
-                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-2)' }}
-              >
-                {isAr ? 'إدخال الطالب' : 'Student Input'}
-              </div>
-            </div>
-
-            {ARCH.map((a) => (
-              <div key={a.key} className="flex items-center gap-3">
-                <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                  <path d="M0 6h16M12 1l5 5-5 5" stroke={a.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <div className="text-center">
-                  <div
-                    className="px-4 py-2 rounded-lg text-sm font-bold tracking-tight"
-                    style={{ background: `${a.color}18`, border: `1px solid ${a.color}`, color: a.color }}
-                  >
-                    {a.key}
-                  </div>
-                  <div className="text-[10px] mt-1" style={{ color: 'var(--color-muted)' }}>
-                    {isAr ? a.labelAr : a.label}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            <div className="flex items-center gap-3">
-              <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                <path d="M0 6h16M12 1l5 5-5 5" stroke="var(--color-text-2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div
-                className="px-4 py-2 rounded-lg text-sm font-medium"
-                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-2)' }}
-              >
-                {isAr ? 'إخراج للطالب' : 'Output'}
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* ── CTA banner ─────────────────────────────────────────────────── */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="rounded-2xl p-10 text-center mb-24"
-          style={{ background: 'var(--color-primary-dim)', border: '1px solid var(--color-primary)' }}
-        >
-          <h2 className="text-2xl font-bold mb-3">
-            {isAr ? 'الذكاء يوجد في كل مكان. الفرصة يجب أن تكون كذلك.' : 'Intelligence is everywhere. Opportunity should be too.'}
-          </h2>
-          <p className="mb-7 text-sm" style={{ color: 'var(--color-text-2)' }}>
-            {isAr
-              ? 'انضم إلى CALM وابدأ رحلتك نحو إتقان الأرياضيات بمستوى الجامعات العالمية.'
-              : 'Join CALM and begin your journey to world-class calculus mastery — at your own pace, in your own language.'}
-          </p>
-          <motion.button
-            onClick={go}
-            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-            className="px-10 py-3 rounded-xl text-base font-semibold cursor-pointer"
-            style={{ background: 'var(--color-primary)', color: 'var(--color-ink)' }}
-          >
-            {isAr ? 'ابدأ مجاناً' : 'Start for Free'}
-          </motion.button>
-        </motion.section>
-      </main>
-
-      {/* Footer */}
-      <footer
-        className="text-center py-6 text-xs"
-        style={{ borderTop: '1px solid var(--color-border)', color: 'var(--color-subtle)' }}
-      >
-        CALM — Cognitive Apprenticeship via Large Language Models . 2026
-      </footer>
-    </div>
-  );
-}
