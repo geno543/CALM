@@ -209,8 +209,13 @@ async def chat_summary(current_user: dict = Depends(get_current_user)):
             max_tokens=1200,
         )
         raw = resp.choices[0].message.content or ""
-        # Strip <think>...</think> block
-        raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+        # K2-Think-v2 sometimes emits reasoning text BEFORE the <think> tag,
+        # so a regex on <think>...</think> can miss it.
+        # Safest: discard everything up to and including </think>, if present.
+        if "</think>" in raw:
+            raw = raw.split("</think>", 1)[1].strip()
+        else:
+            raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
         return raw
 
     loop    = asyncio.get_running_loop()
