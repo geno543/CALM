@@ -589,7 +589,10 @@ def prepare_chat(user_input, chat_history, student_concept_all, data_student):
         control = {"mode": "TUTOR_MODE", "should_evaluate": False}
 
     eval_result = {"evaluated": False, "is_correct": None, "mastery_before": None, "mastery_after": None}
-    if control.get("should_evaluate") and last_ai_message:
+    # Always evaluate in TUTOR_MODE — don't rely on controller's should_evaluate flag
+    # (unreliable with reasoning models like K2-Think-v2). The evaluator's own
+    # student_answered field decides whether BKT actually changes.
+    if control.get("mode", "TUTOR_MODE") == "TUTOR_MODE" and last_ai_message:
         try:
             mastery_before = student_concept["P_mastery"]
             eval_data = _parse_json(evaluator_chain.invoke({
