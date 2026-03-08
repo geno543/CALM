@@ -227,12 +227,44 @@ async def _stream_response(username: str, user_input: str, learning_mode: bool =
         chain_input  = {"input": user_input}
 
     response_text = ""
+    # K2-Think-v2 streams a <think>…</think> reasoning block before the real answer.
+    # Buffer and discard those tokens so only the actual response reaches the frontend.
+    _in_think  = False
+    _think_buf = ""
     try:
         async for chunk in stream_chain.astream(chain_input):
             token = chunk.content if hasattr(chunk, "content") else str(chunk)
-            if token:
-                response_text += token
-                yield {"event": "token", "data": json.dumps(token)}
+            if not token:
+                continue
+
+            if _in_think:
+                _think_buf += token
+                if "</think>" in _think_buf:
+                    _, after = _think_buf.split("</think>", 1)
+                    _think_buf = ""
+                    _in_think  = False
+                    if after:
+                        response_text += after
+                        yield {"event": "token", "data": json.dumps(after)}
+            else:
+                if "<think>" in token:
+                    before, rest = token.split("<think>", 1)
+                    if before:
+                        response_text += before
+                        yield {"event": "token", "data": json.dumps(before)}
+                    _in_think  = True
+                    _think_buf = rest
+                    # think block may open and close in the same token
+                    if "</think>" in _think_buf:
+                        _, after = _think_buf.split("</think>", 1)
+                        _think_buf = ""
+                        _in_think  = False
+                        if after:
+                            response_text += after
+                            yield {"event": "token", "data": json.dumps(after)}
+                else:
+                    response_text += token
+                    yield {"event": "token", "data": json.dumps(token)}
     except Exception as exc:
         if not response_text:
             yield {"event": "token", "data": f"[Streaming error: {exc}]"}
