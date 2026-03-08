@@ -72,10 +72,12 @@ def get_context(pdf_file, query):
     return "\n\n".join(parts) if parts else "No context found."
 
 
-# ── JSON helper: strips markdown fences before parsing ───────────────────────
+# ── JSON helper: strips markdown fences and <think> blocks before parsing ─────
 def _parse_json(content: str) -> dict:
-    """Strip ```json...``` markdown fences if present, then parse JSON."""
+    """Strip <think>…</think> reasoning blocks and ```json``` fences, then parse JSON."""
     content = content.strip()
+    # K2-Think-v2 wraps its reasoning in <think>...</think> before the JSON
+    content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
     if content.startswith("```"):
         content = re.sub(r"^```[a-zA-Z]*\n?", "", content)
         content = re.sub(r"\n?```$", "", content.strip())
