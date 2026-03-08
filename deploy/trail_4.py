@@ -9,8 +9,12 @@ import os
 import re
 
 # constant variables — loaded from environment (set in backend/.env)
-API_KEY  = os.getenv("API_KEY", "")
+API_KEY  = os.getenv("API_KEY", "")           # hackclub — used for embeddings
 BASE_URL = os.getenv("BASE_URL", "https://ai.hackclub.com/proxy/v1")
+
+# K2 Think — used for chat LLM
+K2_API_KEY  = os.getenv("K2_API_KEY",  "IFM-ZasUfxMEHkOsoyFw")
+K2_BASE_URL = os.getenv("K2_BASE_URL", "https://api.k2think.ai/v1")
 
 CHAPTERS = [
     "functions.pdf",
@@ -81,9 +85,9 @@ def _parse_json(content: str) -> dict:
 #main LLM
 
 llm = ChatOpenAI(
-    model="gemini-2.5-flash",
-    base_url=BASE_URL,
-    api_key=API_KEY
+    model="MBZUAI-IFM/K2-Think-v2",
+    base_url=K2_BASE_URL,
+    api_key=K2_API_KEY
 )
 
 # llm for choose the particular file
