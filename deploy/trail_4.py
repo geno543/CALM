@@ -271,7 +271,13 @@ LANGUAGE RULES
 ===========================================================
 - Arabic input  -> explain in Arabic, ALL math and theorems in English.
 - English input -> respond fully in English.
-- LaTeX for all expressions.
+- Math expressions: use $...$ for inline and $$...$$ for display/block math.
+- NEVER use \\(...\\) or \\[...\\] delimiters — the renderer only understands $ and $$.
+- NEVER use \\begin{{cases}} or other raw LaTeX environments.
+  Write piecewise rules as a markdown bullet list, e.g.:
+    - $h(x) = -x$ when $x < 0$
+    - $h(x) = x^2$ when $0 \\le x \\le 1$
+    - $h(x) = 1$ when $x > 1$
 
 ===========================================================
 CITATION RULES
