@@ -378,6 +378,23 @@ export default function ChatLayout() {
             {isAr ? (learningMode ? 'تعلم' : 'مباشر') : (learningMode ? 'Learn' : 'Direct')}
           </button>
 
+          {/* Export Summary — moved before Panel */}
+          {messages.length > 0 && (
+            <button
+              onClick={openSummary}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black tracking-widest uppercase cursor-pointer transition-all"
+              style={{
+                background: 'transparent',
+                border:     '1px solid var(--color-accent)',
+                color:      'var(--color-accent)',
+                fontFamily: 'var(--font-mono)',
+              }}
+              title={isAr ? 'ملخص الجلسة بالذكاء الاصطناعي' : 'AI Session Summary'}
+            >
+              &gt;_ {isAr ? 'ملخص' : 'Summary'}
+            </button>
+          )}
+
           {/* Right panel toggle */}
           <button
             onClick={() => setRightOpen((v) => !v)}
@@ -394,29 +411,6 @@ export default function ChatLayout() {
             </svg>
             {isAr ? 'التفاصيل' : 'Panel'}
           </button>
-
-          {/* Export Summary */}
-          {messages.length > 0 && (
-            <button
-              onClick={openSummary}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
-              style={{
-                background: 'var(--color-surface)',
-                border:     '1px solid var(--color-border)',
-                color:      'var(--color-muted)',
-              }}
-              title={isAr ? 'ملخص الجلسة بالذكاء الاصطناعي' : 'AI Session Summary'}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
-              {isAr ? 'ملخص' : 'Summary'}
-            </button>
-          )}
         </div>
 
         {/* Messages area */}

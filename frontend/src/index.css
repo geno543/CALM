@@ -112,9 +112,10 @@ pre code { background: transparent; border: none; padding: 0; color: var(--color
 .prose-calm em     { color: var(--color-text-2); }
 .prose-calm hr     { border-color: var(--color-border); margin: 1em 0; }
 .prose-calm a      { color: var(--color-primary); }
-.prose-calm table  { width: 100%; border-collapse: collapse; }
-.prose-calm th, .prose-calm td { border: 1px solid var(--color-border); padding: 0.4em 0.75em; }
-.prose-calm th { background: var(--color-surface-2); color: var(--color-text-2); font-weight: 500; }
+.prose-calm table  { width: 100%; border-collapse: collapse; font-size: 0.83em; }
+.prose-calm th     { border: 1px solid var(--color-border); padding: 0.35em 0.7em; background: var(--color-surface-2); color: var(--color-primary); font-family: var(--font-mono); font-weight: 900; font-size: 0.78em; letter-spacing: 0.06em; text-transform: uppercase; }
+.prose-calm td     { border: 1px solid var(--color-border); padding: 0.35em 0.7em; vertical-align: top; }
+.prose-calm tr:nth-child(even) td { background: var(--color-surface); }
 
 /* ── Summary modal content ───────────────────────────────────────────────── */
 .summary-content { color: var(--color-text); line-height: 1.85; font-size: 0.88rem; }

@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath  from 'remark-math';
+import remarkGfm   from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import { motion }  from 'framer-motion';
 import type { ChatMessage } from '../types';
@@ -49,12 +50,29 @@ function parseSteps(content: string): { label: string; body: string; color: stri
 const MarkdownSection = memo(({ content }: { content: string }) => (
   <div className="prose-calm">
     <ReactMarkdown
-      remarkPlugins={[remarkMath]}
+      remarkPlugins={[remarkMath, remarkGfm]}
       rehypePlugins={[rehypeKatex]}
       components={{
         h1: ({ children }) => <p className="font-bold text-base mt-3 mb-1" style={{ color: 'var(--color-text)' }}>{children}</p>,
         h2: ({ children }) => <p className="font-semibold text-sm mt-2 mb-1" style={{ color: 'var(--color-text)' }}>{children}</p>,
         h3: ({ children }) => <p className="font-medium text-sm mt-2 mb-0.5" style={{ color: 'var(--color-text-2)' }}>{children}</p>,
+        table: ({ children }) => (
+          <div className="overflow-x-auto my-3">
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>{children}</table>
+          </div>
+        ),
+        thead: ({ children }) => <thead style={{ borderBottom: '2px solid var(--color-border)' }}>{children}</thead>,
+        th: ({ children }) => (
+          <th style={{ padding: '0.35em 0.75em', textAlign: 'left', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontWeight: 900, fontSize: '0.78em', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-2)' }}>
+            {children}
+          </th>
+        ),
+        td: ({ children }) => (
+          <td style={{ padding: '0.35em 0.75em', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text)', verticalAlign: 'top' }}>
+            {children}
+          </td>
+        ),
+        tr: ({ children }) => <tr style={{ borderBottom: '1px solid var(--color-border)' }}>{children}</tr>,
       }}
     >
       {content}
