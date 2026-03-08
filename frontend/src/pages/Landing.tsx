@@ -59,14 +59,14 @@ function Ticker({ isAr }: { isAr: boolean }) {
 
 //  Pipeline steps 
 const PIPELINE_EN = [
-  { num: '01', title: 'QUESTION RECEIVED', desc: 'You ask anything about calculus. CALM identifies the concept, maps it to the curriculum, and runs RAG retrieval from Thomas\'s Calculus.' },
-  { num: '02', title: 'RAG RETRIEVAL', desc: 'Relevant verified passages are pulled from the textbook. Every explanation is grounded  no hallucinated mathematics.' },
+  { num: '01', title: 'QUESTION RECEIVED', desc: 'You ask anything about your subject — Calculus, Biology, Chemistry, or Physics. CALM identifies the concept, maps it to the curriculum, and runs RAG retrieval from the verified textbook.' },
+  { num: '02', title: 'RAG RETRIEVAL', desc: 'Relevant verified passages are pulled from authoritative textbooks. Every explanation is grounded — no hallucinated science or mathematics.' },
   { num: '03', title: 'BKT UPDATE', desc: 'Bayesian Knowledge Tracing updates your mastery estimate across the concept tree in real time. 7 levels. Continuous adaptation.' },
   { num: '04', title: 'SOCRATIC RESPONSE', desc: 'You never get the answer. You get a question that makes you find it. The engine guides you from first principles to mastery.' },
 ];
 const PIPELINE_AR = [
-  { num: '01', title: 'استقبال السؤال', desc: 'تطرح أي سؤال في الحساب. يعرف CALM المفهوم ويضعه على خريطة المنهج ويستعيد المعلومات من كتاب Thomas\'s Calculus.' },
-  { num: '02', title: 'استرجاع المعرفة', desc: 'تسحب مقاطع موثقة من الكتاب المدرسي. كل شرح مرتكز على مصادر  لا رياضيات متوهمة.' },
+  { num: '01', title: 'استقبال السؤال', desc: 'تطرح أي سؤال في مادتك — الحساب أو الأحياء أو الكيمياء أو الفيزياء. يعرف CALM المفهوم ويضعه على خريطة المنهج ويستعيد المعلومات من الكتاب الموثوق.' },
+  { num: '02', title: 'استرجاع المعرفة', desc: 'تسحب مقاطع موثقة من كتب مرجعية معتمدة. كل شرح مرتكز على مصادر — لا علوم ولا رياضيات متوهمة.' },
   { num: '03', title: 'تحديث BKT', desc: 'يحدث تتبع المعرفة البايزي تقدير إتقانك عبر شجرة المفاهيم في الوقت الفعلي. 7 مستويات. تكيف مستمر.' },
   { num: '04', title: 'الاستجابة السقراطية', desc: 'لا تحصل على الجواب أبدا. تحصل على سؤال يجعلك تجده بنفسك. يقودك المحرك من المبادئ الأولى إلى الإتقان.' },
 ];
@@ -78,8 +78,8 @@ const COMPARE = {
     ar: ['إجابات عامة بدون مصادر', 'لا نموذج لما تعرفه فعلا', 'تعطيك الجواب مباشرة', 'لغة واحدة بدون تكيف'],
   },
   good: {
-    en: ['RAG-grounded in Thomas\'s Calculus  no hallucinations', 'Bayesian model of your personal knowledge state', 'Guides you with Socratic questions to build real understanding', 'Fully bilingual Arabic + English, adapts to you'],
-    ar: ['مرتكز على كتاب Thomas\'s Calculus  لا توهمات', 'نموذج بايزي لحالة معرفتك الشخصية', 'يوجهك بأسئلة سقراطية لبناء فهم حقيقي', 'ثنائي اللغة عربي + إنجليزي يتكيف معك'],
+    en: ['RAG-grounded in verified textbooks — no hallucinations', 'Bayesian model of your personal knowledge state', 'Guides you with Socratic questions to build real understanding', 'Fully bilingual Arabic + English, adapts to you'],
+    ar: ['مرتكز على كتب موثوقة — لا توهمات', 'نموذج بايزي لحالة معرفتك الشخصية', 'يوجهك بأسئلة سقراطية لبناء فهم حقيقي', 'ثنائي اللغة عربي + إنجليزي يتكيف معك'],
   },
 };
 
@@ -377,8 +377,8 @@ export default function Landing() {
           </h2>
           <p className="text-sm mb-10 max-w-lg mx-auto" style={{ color: 'var(--color-muted)', lineHeight: 1.7 }}>
             {isAr
-              ? 'انضم إلى CALM وابدأ رحلتك نحو إتقان الرياضيات بمستوى الجامعات العالمية  بلغتك وبوتيرتك الخاصة.'
-              : 'Join CALM and begin your journey to world-class calculus mastery  at your own pace, in your own language.'}
+              ? 'انضم إلى CALM وابدأ رحلتك نحو إتقان العلوم بمستوى الجامعات العالمية — بلغتك وبوتيرتك الخاصة.'
+              : 'Join CALM and begin your journey to world-class STEM mastery — at your own pace, in your own language.'}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-4">
             <motion.button
