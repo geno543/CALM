@@ -15,6 +15,7 @@ import ChapterNav                from '../components/ChapterNav';
 import MessageBubble             from '../components/MessageBubble';
 import ChatInput                 from '../components/ChatInput';
 import DesmosPanel               from '../components/DesmosPanel';
+import { collectAllGraphExprs }  from '../utils/graphUtils';
 import type { ChatMessage }      from '../types';
 import { genId }                 from '../stores/chatStore';
 import { LEVEL_COLORS, CHAPTERS } from '../types';
@@ -412,7 +413,7 @@ export default function ChatLayout() {
 
           {/* Graph / Desmos button */}
           <button
-            onClick={() => openDesmos()}
+            onClick={() => openDesmos(collectAllGraphExprs(messages))}
             className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black tracking-widest uppercase cursor-pointer transition-all"
             style={{
               background: 'transparent',

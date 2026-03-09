@@ -5,6 +5,7 @@ import remarkGfm   from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import { motion }  from 'framer-motion';
 import type { ChatMessage } from '../types';
+import { extractGraphableExprs } from '../utils/graphUtils';
 
 interface Props {
   message:   ChatMessage;
@@ -12,78 +13,7 @@ interface Props {
   onGraph?:  (exprs: string[]) => void;
 }
 
-/**
- * Extract LaTeX expressions from assistant message content that are
- * graphable in Desmos (equations with = sign, display-math blocks).
- */
-function extractGraphableExprs(text: string): string[] {
-  const seen    = new Set<string>();
-  const results: string[] = [];
-
-  // Patterns that mean the expression is NOT a plottable curve
-  const nonGraphable = /\\(text|longrightarrow|Longrightarrow|rightarrow|mapsto|cup|cap|subset|subseteq|supset|supseteq|in|notin|forall|exists|neq|sim|cong|equiv|approx|implies|iff|to|gets|circ|times(?!\s*x))\b|\\text\s*\{|Domain|Range|\\quad|\\qquad/;
-
-  // Only accept equations whose LHS is a plottable function variable
-  const graphableLHS = /^\s*(?:[a-zA-Z](?:_[a-zA-Z0-9])?\s*(?:\([^)]*\))?|[a-zA-Z])\s*=/;
-
-  // Natural-language words that indicate the string is prose, not a formula
-  const proseWords = /\b(for|and|where|when|with|such|that|impose|domain|restriction|range|the|a\s|an\s|is|are|all|define|let|consider|given|note|since|so|but|or|if|then|assume)\b/i;
-
-  const isGraphable = (latex: string): boolean => {
-    const s = latex.trim();
-    if (!s.includes('=')) return false;
-    // inline-math delimiters inside the string means it's spliced from prose
-    if (/\\[()\[\]]/.test(s)) return false;
-    // reject if contains set/logic/arrow notation
-    if (nonGraphable.test(s)) return false;
-    // LHS must look like  y=, f(x)=, g(x)=, h(x)=, P(x)=, r=, etc.
-    if (!graphableLHS.test(s)) return false;
-    // RHS must contain 'x' so it's actually a curve, not a constant assignment
-    const rhs = s.slice(s.indexOf('=') + 1).trim();
-    if (!/x/.test(rhs)) return false;
-    // RHS must not read like English prose
-    if (proseWords.test(rhs)) return false;
-    // Reject abstract  y=f(x), y=g(x), y=h(x) — undefined function refs, not plottable
-    if (/^[a-zA-Z]\s*\(\s*x\s*\)\s*$/.test(rhs)) return false;
-    return true;
-  };
-
-  const add = (raw: string) => {
-    const e = raw
-      .trim()
-      .replace(/\\(label|tag|nonumber)\{[^}]*\}/g, '')
-      .replace(/\\\\\s*$/gm, '')
-      .replace(/[.,;:]+$/, '')   // strip trailing punctuation
-      .trim();
-    if (e && e.length > 2 && e.length < 300 && !seen.has(e) && isGraphable(e)) {
-      seen.add(e);
-      results.push(e);
-    }
-  };
-
-  let m: RegExpExecArray | null;
-
-  // 1. Display math:  $$...$$
-  const displayDollar = /\$\$([^$]+)\$\$/gs;
-  while ((m = displayDollar.exec(text)) !== null) add(m[1]);
-
-  // 2. Display math:  \[...\]
-  const displayBracket = /\\\[([\s\S]+?)\\\]/g;
-  while ((m = displayBracket.exec(text)) !== null) add(m[1]);
-
-  // 3. Inline math:  $...$ (short, only if it passes isGraphable)
-  const inlineDollar = /\$([^$\n]{3,80})\$/g;
-  while ((m = inlineDollar.exec(text)) !== null) add(m[1]);
-
-  // 4. Plain-text:  y = ...,  f(x) = ...  (stop at \) or natural word boundaries)
-  const plainEq = /\b([fghFGH]\s*\(x\)|y|r)\s*=\s*([^,\n<>#{\\]{4,80})/g;
-  while ((m = plainEq.exec(text)) !== null) {
-    const full = `${m[1]}=${m[2].trimEnd()}`;
-    if (!seen.has(full)) add(full);
-  }
-
-  return results.slice(0, 7);
-}
+// extractGraphableExprs is imported from ../utils/graphUtils
 
 // Step colours  (border-left)
 const STEP_COLORS: Record<string, string> = {

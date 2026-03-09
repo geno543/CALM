@@ -35,6 +35,8 @@ function latexToMath(raw: string): string {
   s = s.replace(/\)\s*\(/g, ')*(').replace(/(\d)\s*\(/g, '$1*(');
   // strip trailing punctuation / LaTeX closers
   s = s.replace(/[.,;:!?\\)\]]+$/, '');
+  // normalize motion-variable t → x so the canvas renderer (which uses x) works
+  if (!/x/.test(s) && /\bt\b/.test(s)) s = s.replace(/\bt\b/g, 'x');
   return s.trim();
 }
 
