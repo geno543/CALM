@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
 import { useStudentStore } from '../stores/studentStore';
 import { useLang }         from '../contexts/LanguageContext';
 import { CHAPTERS } from '../types';
@@ -21,6 +22,19 @@ export default function ChapterNav({ onChapterClick }: Props) {
   const { isAr }  = useLang();
   const current   = state.current_chapter;
 
+  // Track previous chapter to detect unlock transitions
+  const prevChapterRef = useRef<string>(current);
+  const [flashChapter, setFlashChapter] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (prevChapterRef.current !== current) {
+      setFlashChapter(current);
+      prevChapterRef.current = current;
+      const t = setTimeout(() => setFlashChapter(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [current]);
+
   return (
     <div
       className="p-4 space-y-2"
@@ -35,7 +49,8 @@ export default function ChapterNav({ onChapterClick }: Props) {
 
       <div className="space-y-1">
         {CHAPTERS.map((ch: typeof CHAPTERS[number], idx: number) => {
-          const isActive = current === ch.file;
+          const isActive    = current === ch.file;
+          const isFlashing  = flashChapter === ch.file;
           return (
             <motion.button
               key={ch.file}
@@ -49,6 +64,11 @@ export default function ChapterNav({ onChapterClick }: Props) {
               }}
               whileHover={isActive ? { scale: 1.01 } : {}}
               whileTap={isActive ? { scale: 0.98 } : {}}
+              animate={isFlashing ? {
+                borderLeftColor: ['var(--color-primary)', 'var(--color-accent)', 'var(--color-primary)', 'var(--color-accent)', 'var(--color-primary)'],
+                boxShadow: ['0 0 0px rgba(61,220,151,0)', '0 0 14px rgba(61,220,151,0.45)', '0 0 0px rgba(61,220,151,0)', '0 0 12px rgba(61,220,151,0.35)', '0 0 0px rgba(61,220,151,0)'],
+              } : {}}
+              transition={{ duration: 0.7, ease: 'easeInOut' }}
               disabled={!isActive}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
               style={{
@@ -76,22 +96,40 @@ export default function ChapterNav({ onChapterClick }: Props) {
                 {isAr ? ch.labelAr : ch.label}
               </span>
               {isActive ? (
-                <span
-                  className="text-xs w-5 h-5 flex items-center justify-center shrink-0"
-                  style={{
-                    background: 'var(--color-primary)',
-                    color:      'var(--color-ink)',
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 900,
-                  }}
-                >
-                  {idx + 1}
-                </span>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key="num"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.22 }}
+                    className="text-xs w-5 h-5 flex items-center justify-center shrink-0"
+                    style={{
+                      background: 'var(--color-primary)',
+                      color:      'var(--color-ink)',
+                      fontFamily: 'var(--font-mono)',
+                      fontWeight: 900,
+                    }}
+                  >
+                    {idx + 1}
+                  </motion.span>
+                </AnimatePresence>
               ) : (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-subtle)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key="lock"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.22 }}
+                    style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-subtle)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </motion.span>
+                </AnimatePresence>
               )}
             </motion.button>
           );

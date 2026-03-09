@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath  from 'remark-math';
 import remarkGfm   from 'remark-gfm';
@@ -151,13 +151,22 @@ export default function MessageBubble({ message, streaming }: Props) {
   // ── Assistant message (MCSE) ───────────────────────────────────────────────
   const steps = parseSteps(content);
   const hasSteps = steps.some((s) => s.label !== '');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      className="flex mb-2"
+      className="flex mb-2 group"
     >
       {/* [C] monospace avatar tag */}
       <div
@@ -176,7 +185,37 @@ export default function MessageBubble({ message, streaming }: Props) {
         [C]
       </div>
 
-      <div className="flex-1 min-w-0 space-y-1.5">
+      <div className="flex-1 min-w-0 space-y-1.5 relative">
+        {/* Copy button — appears on hover, top-right */}
+        {!streaming && (
+          <button
+            onClick={handleCopy}
+            title={copied ? 'Copied!' : 'Copy'}
+            className="absolute top-0 right-0 z-10 flex items-center gap-1 px-2 py-1 text-[9px] font-black tracking-wider uppercase transition-all opacity-0 group-hover:opacity-100"
+            style={{
+              fontFamily:  'var(--font-mono)',
+              background:  copied ? 'rgba(61,220,151,0.12)' : 'var(--color-surface-2)',
+              border:      `1px solid ${copied ? 'var(--color-accent)' : 'var(--color-border)'}`,
+              color:       copied ? 'var(--color-accent)' : 'var(--color-subtle)',
+            }}
+          >
+            {copied ? (
+              <>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                copied
+              </>
+            ) : (
+              <>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                copy
+              </>
+            )}
+          </button>
+        )}
         {hasSteps ? (
           steps.map((step, idx) => (
             <div key={idx}>

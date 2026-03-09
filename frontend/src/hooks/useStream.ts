@@ -8,7 +8,7 @@ import type { ChatMessage, StreamMeta } from '../types';
 const BACKEND = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000';
 
 export function useStream() {
-  const { addMessage, startStreaming, appendToken, finalizeStream, clearStreaming } = useChatStore();
+  const { addMessage, startStreaming, appendToken, finalizeStream, clearStreaming, addLevelUpToast } = useChatStore();
   const { update: updateStudent } = useStudentStore();
   const learningMode = useStudentStore(s => s.state.learning_mode);
   const abortRef = useRef<AbortController | null>(null);
@@ -119,6 +119,11 @@ export function useStream() {
             } else if (event === 'meta' && data) {
               try {
                 const meta = JSON.parse(data) as StreamMeta;
+                // Detect level-up before updating store
+                const prevLevel = useStudentStore.getState().state.level;
+                if (meta.student_state.level > prevLevel) {
+                  addLevelUpToast(meta.student_state.level, meta.student_state.level_label ?? `Level ${meta.student_state.level}`);
+                }
                 updateStudent({
                   bkt:             meta.student_state.bkt,
                   chapter_mastery: meta.student_state.chapter_mastery,
@@ -182,7 +187,7 @@ export function useStream() {
       };
       addMessage(msg);
     }
-  }, [addMessage, startStreaming, appendToken, finalizeStream, clearStreaming, updateStudent, learningMode]);
+  }, [addMessage, startStreaming, appendToken, finalizeStream, clearStreaming, addLevelUpToast, updateStudent, learningMode]);
 
   return { send };
 }

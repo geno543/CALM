@@ -115,9 +115,10 @@ export default function ChatLayout() {
     document.body.classList.add('chat-page');
     return () => document.body.classList.remove('chat-page');
   }, []);
-  const { messages, streamingContent, isStreaming, historyLoaded, setMessages, clearHistory, setHistoryLoaded } = useChatStore();
+  const { messages, streamingContent, isStreaming, isReasoning, historyLoaded, levelUpToasts, dismissLevelUpToast, setMessages, clearHistory, setHistoryLoaded } = useChatStore();
   const { refresh, setMode } = useStudentStore();
   const learningMode = useStudentStore(s => s.state.learning_mode);
+  const masteryPct   = useStudentStore(s => Math.round((s.state.bkt?.P_mastery ?? 0) * 100));
   const { isAr, toggle, lang }     = useLang();
   const { send }     = useStream();
 
@@ -443,6 +444,55 @@ export default function ChatLayout() {
           </button>
         </div>
 
+        {/* Mastery progress bar — 3px animated strip beneath topbar */}
+        <div className="shrink-0 relative" style={{ height: 3, background: 'var(--color-surface-2)' }}>
+          <motion.div
+            className="absolute inset-y-0 left-0"
+            animate={{ width: `${masteryPct}%` }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            style={{ background: masteryPct >= 80 ? 'var(--color-accent)' : 'var(--color-primary)' }}
+          />
+        </div>
+
+        {/* Level-up toast stack — fixed bottom-right */}
+        <div className="fixed bottom-24 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+          <AnimatePresence>
+            {levelUpToasts.map((toast) => (
+              <motion.div
+                key={toast.id}
+                initial={{ opacity: 0, x: 60, scale: 0.92 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 60, scale: 0.92 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                onAnimationComplete={() => {
+                  // auto-dismiss after 4s
+                  setTimeout(() => dismissLevelUpToast(toast.id), 4000);
+                }}
+                className="pointer-events-auto px-4 py-3 flex items-center gap-3"
+                style={{
+                  background:   'var(--color-ink)',
+                  border:       '1px solid var(--color-accent)',
+                  borderLeft:   '3px solid var(--color-accent)',
+                  minWidth:     220,
+                  fontFamily:   'var(--font-mono)',
+                  cursor:       'pointer',
+                }}
+                onClick={() => dismissLevelUpToast(toast.id)}
+              >
+                <span className="text-base font-black" style={{ color: 'var(--color-accent)' }}>↑</span>
+                <div>
+                  <p className="text-[10px] font-black tracking-widest uppercase" style={{ color: 'var(--color-accent)' }}>
+                    {isAr ? 'ارتقاء المستوى' : 'level up'}
+                  </p>
+                  <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>
+                    {isAr ? 'مستوى' : 'Level'} {toast.level} — {toast.label}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
         {/* Messages area */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
           {/* Mode banner — shown only in direct answer mode */}
@@ -518,7 +568,7 @@ export default function ChatLayout() {
                 [C]
               </div>
               <div
-                className="flex items-center gap-1 px-4 py-3"
+                className="flex items-center gap-2 px-4 py-3"
                 style={{
                   background:   'var(--color-surface)',
                   borderTop:    '1px solid var(--color-border)',
@@ -527,15 +577,32 @@ export default function ChatLayout() {
                   borderLeft:   '3px solid var(--color-accent)',
                 }}
               >
-                {[0, 0.18, 0.36].map((delay) => (
-                  <motion.div
-                    key={delay}
-                    className="w-1.5 h-4"
-                    style={{ background: 'var(--color-accent)' }}
-                    animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.4, 1, 0.4] }}
-                    transition={{ repeat: Infinity, duration: 0.75, delay }}
-                  />
-                ))}
+                {isReasoning ? (
+                  <>
+                    <motion.span
+                      className="inline-block w-1.5 h-1.5 rounded-full"
+                      style={{ background: 'var(--color-accent)' }}
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+                    />
+                    <span
+                      className="text-[10px] font-black tracking-wider uppercase"
+                      style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}
+                    >
+                      {isAr ? 'K2-Think-v2 يفكر...' : 'K2-Think-v2 is reasoning...'}
+                    </span>
+                  </>
+                ) : (
+                  [0, 0.18, 0.36].map((delay) => (
+                    <motion.div
+                      key={delay}
+                      className="w-1.5 h-4"
+                      style={{ background: 'var(--color-accent)' }}
+                      animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.4, 1, 0.4] }}
+                      transition={{ repeat: Infinity, duration: 0.75, delay }}
+                    />
+                  ))
+                )}
               </div>
             </motion.div>
           )}
