@@ -33,6 +33,8 @@ function latexToMath(raw: string): string {
   s = s.replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '');
   s = s.replace(/(\d)([a-df-wyzA-Z])/g, '$1*$2');
   s = s.replace(/\)\s*\(/g, ')*(').replace(/(\d)\s*\(/g, '$1*(');
+  // strip trailing punctuation / LaTeX closers
+  s = s.replace(/[.,;:!?\\)\]]+$/, '');
   return s.trim();
 }
 
