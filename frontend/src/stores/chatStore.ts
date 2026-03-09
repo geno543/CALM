@@ -14,6 +14,8 @@ interface ChatStore {
   isReasoning:      boolean;
   historyLoaded:    boolean;
   levelUpToasts:    LevelUpToast[];
+  desmosOpen:       boolean;
+  desmosExprs:      string[];
 
   addMessage:          (msg: ChatMessage)                    => void;
   startStreaming:      ()                                    => void;
@@ -26,6 +28,8 @@ interface ChatStore {
   setReasoning:        (v: boolean)                          => void;
   addLevelUpToast:     (level: number, label: string)        => void;
   dismissLevelUpToast: (id: string)                          => void;
+  openDesmos:          (exprs?: string[])                    => void;
+  closeDesmos:         ()                                    => void;
 }
 
 let _nextId = 1;
@@ -38,6 +42,8 @@ export const useChatStore = create<ChatStore>((set) => ({
   isReasoning:      false,
   historyLoaded:    false,
   levelUpToasts:    [],
+  desmosOpen:       false,
+  desmosExprs:      [],
 
   addMessage: (msg) =>
     set((s) => ({ messages: [...s.messages, msg] })),
@@ -90,6 +96,12 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   dismissLevelUpToast: (id) =>
     set((s) => ({ levelUpToasts: s.levelUpToasts.filter((t) => t.id !== id) })),
+
+  openDesmos: (exprs = []) =>
+    set({ desmosOpen: true, desmosExprs: exprs }),
+
+  closeDesmos: () =>
+    set({ desmosOpen: false }),
 }));
 
 export { genId };

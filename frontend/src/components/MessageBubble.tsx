@@ -9,6 +9,53 @@ import type { ChatMessage } from '../types';
 interface Props {
   message:   ChatMessage;
   streaming?: boolean;
+  onGraph?:  (exprs: string[]) => void;
+}
+
+/**
+ * Extract LaTeX expressions from assistant message content that are
+ * graphable in Desmos (equations with = sign, display-math blocks).
+ */
+function extractGraphableExprs(text: string): string[] {
+  const seen    = new Set<string>();
+  const results: string[] = [];
+
+  const add = (raw: string) => {
+    // Strip LaTeX label/tag commands and trim
+    const e = raw.trim()
+      .replace(/\\(label|tag|nonumber)\{[^}]*\}/g, '')
+      .replace(/\\\\\s*$/gm, '')   // trailing line-breaks
+      .trim();
+    if (e && e.length > 1 && e.length < 400 && !seen.has(e)) {
+      seen.add(e);
+      results.push(e);
+    }
+  };
+
+  // 1. Display math:  $$...$$
+  let m: RegExpExecArray | null;
+  const displayDollar = /\$\$([^$]+)\$\$/gs;
+  while ((m = displayDollar.exec(text)) !== null) {
+    const latex = m[1];
+    if (/=/.test(latex)) add(latex);
+  }
+
+  // 2. Display math:  \[...\]
+  const displayBracket = /\\\[([\s\S]+?)\\\]/g;
+  while ((m = displayBracket.exec(text)) !== null) {
+    const latex = m[1];
+    if (/=/.test(latex)) add(latex);
+  }
+
+  // 3. Plain-text equations:  y = ...,  f(x) = ...,  g(x) = ...
+  const plainEq = /\b([fg]\(x\)|[gh]\(t\)|y|r)\s*=\s*([^,\n<>#{]{4,80})/g;
+  while ((m = plainEq.exec(text)) !== null) {
+    // Skip if already found as LaTeX (contains backslash)
+    const full = `${m[1]}=${m[2].trimEnd()}`;
+    if (!seen.has(full)) add(full);
+  }
+
+  return results.slice(0, 6);
 }
 
 // Step colours  (border-left)
@@ -99,7 +146,7 @@ const MarkdownSection = memo(({ content }: { content: string }) => {
 });
 MarkdownSection.displayName = 'MarkdownSection';
 
-export default function MessageBubble({ message, streaming }: Props) {
+export default function MessageBubble({ message, streaming, onGraph }: Props) {
   const { role, content } = message;
 
   // ── System message ─────────────────────────────────────────────────────────
@@ -149,8 +196,9 @@ export default function MessageBubble({ message, streaming }: Props) {
   }
 
   // ── Assistant message (MCSE) ───────────────────────────────────────────────
-  const steps = parseSteps(content);
-  const hasSteps = steps.some((s) => s.label !== '');
+  const steps     = parseSteps(content);
+  const hasSteps  = steps.some((s) => s.label !== '');
+  const graphExprs = extractGraphableExprs(content);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [copied, setCopied] = useState(false);
 
@@ -264,6 +312,26 @@ export default function MessageBubble({ message, streaming }: Props) {
           >
             <MarkdownSection content={content} />
           </div>
+        )}
+
+        {/* Graph chip — shown when graphable expressions detected */}
+        {!streaming && graphExprs.length > 0 && onGraph && (
+          <button
+            onClick={() => onGraph(graphExprs)}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-black tracking-widest uppercase transition-all cursor-pointer mt-1"
+            style={{
+              fontFamily:  'var(--font-mono)',
+              background:  'rgba(88,166,255,0.06)',
+              border:      '1px solid var(--color-primary)',
+              color:       'var(--color-primary)',
+              alignSelf:   'flex-start',
+            }}
+          >
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            graph ({graphExprs.length})
+          </button>
         )}
 
         {/* Blinking block cursor */}

@@ -14,6 +14,7 @@ import MasteryPanel              from '../components/MasteryPanel';
 import ChapterNav                from '../components/ChapterNav';
 import MessageBubble             from '../components/MessageBubble';
 import ChatInput                 from '../components/ChatInput';
+import DesmosPanel               from '../components/DesmosPanel';
 import type { ChatMessage }      from '../types';
 import { genId }                 from '../stores/chatStore';
 import { LEVEL_COLORS, CHAPTERS } from '../types';
@@ -115,7 +116,7 @@ export default function ChatLayout() {
     document.body.classList.add('chat-page');
     return () => document.body.classList.remove('chat-page');
   }, []);
-  const { messages, streamingContent, isStreaming, isReasoning, historyLoaded, levelUpToasts, dismissLevelUpToast, setMessages, clearHistory, setHistoryLoaded } = useChatStore();
+  const { messages, streamingContent, isStreaming, isReasoning, historyLoaded, levelUpToasts, dismissLevelUpToast, openDesmos, setMessages, clearHistory, setHistoryLoaded } = useChatStore();
   const { refresh, setMode } = useStudentStore();
   const learningMode = useStudentStore(s => s.state.learning_mode);
   const masteryPct   = useStudentStore(s => Math.round((s.state.bkt?.P_mastery ?? 0) * 100));
@@ -409,6 +410,24 @@ export default function ChatLayout() {
             {isAr ? (learningMode ? 'تعلم' : 'مباشر') : (learningMode ? 'Learn' : 'Direct')}
           </button>
 
+          {/* Graph / Desmos button */}
+          <button
+            onClick={() => openDesmos()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black tracking-widest uppercase cursor-pointer transition-all"
+            style={{
+              background: 'transparent',
+              border:     '1px solid var(--color-primary)',
+              color:      'var(--color-primary)',
+              fontFamily: 'var(--font-mono)',
+            }}
+            title={isAr ? 'الآلة الحاسبة الرسومية (Desmos)' : 'Graphing Calculator (Desmos)'}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            {isAr ? 'رسم' : 'Graph'}
+          </button>
+
           {/* Export Summary — moved before Panel */}
           {messages.length > 0 && (
             <button
@@ -546,7 +565,11 @@ export default function ChatLayout() {
           )}
 
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              onGraph={msg.role === 'assistant' ? (exprs) => openDesmos(exprs) : undefined}
+            />
           ))}
 
           {isStreaming && streamingContent && (
@@ -639,7 +662,8 @@ export default function ChatLayout() {
           </motion.aside>
         )}
       </AnimatePresence>
-
+      {/* ── Desmos Graphing Calculator Modal ───────────────────────────── */}
+      <DesmosPanel />
       {/* ── Summary Modal ─────────────────────────────────────────────── */}
       <AnimatePresence>
         {summaryOpen && (
