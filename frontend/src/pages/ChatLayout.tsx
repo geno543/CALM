@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown             from 'react-markdown';
@@ -19,12 +19,13 @@ import { genId }                 from '../stores/chatStore';
 import { LEVEL_COLORS, CHAPTERS } from '../types';
 
 // ── Streaming bubble (live token accumulation) ───────────────────────────────
-function StreamingBubble({ content }: { content: string }) {
+// Memoized so that the full message list does not re-render on every token.
+const StreamingBubble = memo(function StreamingBubble({ content }: { content: string }) {
   const fakeMsg: ChatMessage = {
     id: '_streaming', role: 'assistant', content, timestamp: '',
   };
   return <MessageBubble message={fakeMsg} streaming />;
-}
+});
 
 // ── Session info panel (right sidebar) ───────────────────────────────────────
 function SessionPanel() {
@@ -121,6 +122,7 @@ export default function ChatLayout() {
   const { send }     = useStream();
 
   const bottomRef       = useRef<HTMLDivElement>(null);
+  const scrollRafRef    = useRef<number | null>(null);
   // Track lg breakpoint reactively to avoid stale window.innerWidth snapshot
   const [isLg, setIsLg] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   useEffect(() => {
@@ -203,13 +205,27 @@ export default function ChatLayout() {
     })();
   }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-scroll to bottom
+  // Auto-scroll: smooth for new finalized messages, instant (RAF-throttled) during streaming.
+  // Never call scrollIntoView on every token — that creates competing animations and lags the browser.
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, streamingContent]);
+    // New message appended (not a streaming token) — smooth scroll
+    if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+    scrollRafRef.current = requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }, [messages]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // During active streaming: throttle via RAF so at most one scroll per paint frame
+    if (!isStreaming) return;
+    if (scrollRafRef.current) return; // already scheduled
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      bottomRef.current?.scrollIntoView({ behavior: 'instant' });
+    });
+  }, [streamingContent, isStreaming]);
 
   const handleSend = useCallback((text: string) => {
-    // Snap to bottom instantly before send so the smooth-scroll during streaming doesn't feel jarring
     bottomRef.current?.scrollIntoView({ behavior: 'instant' });
     send(text);
   }, [send]);
