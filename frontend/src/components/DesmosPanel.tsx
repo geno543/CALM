@@ -26,9 +26,12 @@ const COLORS = ['#58A6FF', '#3DDC97', '#F0A04B', '#D2A8FF', '#F7C948', '#FF7B72'
 function loadDesmosScript(): Promise<void> {
   return new Promise((resolve) => {
     if (window.Desmos) { resolve(); return; }
-    const existing = document.getElementById('desmos-api');
+    const existing = document.getElementById('desmos-api') as HTMLScriptElement | null;
     if (existing) {
-      existing.addEventListener('load', () => resolve(), { once: true });
+      // Script tag already injected — poll until Desmos global appears
+      const poll = setInterval(() => {
+        if (window.Desmos) { clearInterval(poll); resolve(); }
+      }, 50);
       return;
     }
     const s = document.createElement('script');
@@ -49,36 +52,49 @@ export default function DesmosPanel() {
     if (!desmosOpen) return;
 
     let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
 
     const init = async () => {
       await loadDesmosScript();
-      if (cancelled || !containerRef.current || !window.Desmos) return;
+      if (cancelled || !window.Desmos) return;
 
-      // Destroy previous instance
-      calcRef.current?.destroy();
+      // Wait a frame for the modal animation to complete so the container
+      // has actual pixel dimensions before Desmos measures it
+      timer = setTimeout(() => {
+        if (cancelled || !containerRef.current || !window.Desmos) return;
 
-      calcRef.current = window.Desmos.GraphingCalculator(containerRef.current, {
-        keypad:             true,
-        expressions:        true,
-        settingsMenu:       false,
-        zoomButtons:        true,
-        lockViewport:       false,
-        backgroundColor:    '#0D1117',
-      });
+        // Destroy any previous instance first
+        calcRef.current?.destroy();
 
-      desmosExprs.forEach((latex, i) => {
-        calcRef.current!.setExpression({
-          id:    `e${i}`,
-          latex: latex.trim(),
-          color: COLORS[i % COLORS.length],
+        calcRef.current = window.Desmos.GraphingCalculator(containerRef.current, {
+          keypad:       true,
+          expressions:  true,
+          settingsMenu: false,
+          zoomButtons:  true,
+          lockViewport: false,
         });
-      });
+
+        // Apply expressions (only simple single-line latex; skip multiline envs)
+        desmosExprs.forEach((latex, i) => {
+          const cleaned = latex.trim()
+            .replace(/\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\}/g, '') // strip environments
+            .replace(/\\\\/g, '')   // strip line breaks
+            .trim();
+          if (!cleaned) return;
+          calcRef.current!.setExpression({
+            id:    `e${i}`,
+            latex: cleaned,
+            color: COLORS[i % COLORS.length],
+          });
+        });
+      }, 250); // wait for framer-motion enter animation
     };
 
     init();
 
     return () => {
       cancelled = true;
+      clearTimeout(timer);
       calcRef.current?.destroy();
       calcRef.current = null;
     };
@@ -153,8 +169,17 @@ export default function DesmosPanel() {
               </button>
             </div>
 
-            {/* Desmos mount target */}
-            <div ref={containerRef} className="flex-1" style={{ minHeight: 0, background: '#0D1117' }} />
+            {/* Desmos mount target — explicit height so Desmos can measure it */}
+            <div
+              ref={containerRef}
+              style={{
+                flex:       '1 1 0',
+                minHeight:  0,
+                height:     '100%',
+                width:      '100%',
+                background: '#0D1117',
+              }}
+            />
           </motion.div>
         </motion.div>
       )}
