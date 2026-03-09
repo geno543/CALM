@@ -121,8 +121,22 @@ export default function ChatLayout() {
   const { isAr, toggle, lang }     = useLang();
   const { send }     = useStream();
 
-  const bottomRef       = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollRafRef    = useRef<number | null>(null);
+
+  // Scroll the messages container to the bottom.
+  // Uses direct scrollTo on the container (never scrollIntoView which can
+  // accidentally scroll the page itself, causing the layout to collapse).
+  const scrollToBottom = useCallback((instant = false) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    if (instant) {
+      el.scrollTop = el.scrollHeight;
+    } else {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }
+  }, []);
+
   // Track lg breakpoint reactively to avoid stale window.innerWidth snapshot
   const [isLg, setIsLg] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   useEffect(() => {
@@ -205,30 +219,30 @@ export default function ChatLayout() {
     })();
   }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-scroll: smooth for new finalized messages, instant (RAF-throttled) during streaming.
-  // Never call scrollIntoView on every token — that creates competing animations and lags the browser.
+  // Auto-scroll when a message is finalized — smooth scroll.
   useEffect(() => {
-    // New message appended (not a streaming token) — smooth scroll
     if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
     scrollRafRef.current = requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      scrollRafRef.current = null;
+      scrollToBottom(false);
     });
-  }, [messages]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [messages, scrollToBottom]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-scroll during streaming — RAF-throttled instant scroll.
+  // One scroll per paint frame at most; never creates competing smooth animations.
   useEffect(() => {
-    // During active streaming: throttle via RAF so at most one scroll per paint frame
     if (!isStreaming) return;
-    if (scrollRafRef.current) return; // already scheduled
+    if (scrollRafRef.current) return;
     scrollRafRef.current = requestAnimationFrame(() => {
       scrollRafRef.current = null;
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' });
+      scrollToBottom(true);
     });
-  }, [streamingContent, isStreaming]);
+  }, [streamingContent, isStreaming, scrollToBottom]);
 
   const handleSend = useCallback((text: string) => {
-    bottomRef.current?.scrollIntoView({ behavior: 'instant' });
+    scrollToBottom(true);
     send(text);
-  }, [send]);
+  }, [send, scrollToBottom]);
 
   const handleLogout = () => {
     logout();
@@ -430,7 +444,7 @@ export default function ChatLayout() {
         </div>
 
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
           {/* Mode banner — shown only in direct answer mode */}
           {!learningMode && (
             <div
@@ -526,7 +540,6 @@ export default function ChatLayout() {
             </motion.div>
           )}
 
-          <div ref={bottomRef} />
         </div>
 
         {/* Chat input */}
