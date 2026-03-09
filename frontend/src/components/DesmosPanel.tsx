@@ -219,7 +219,7 @@ export default function DesmosPanel() {
                 <span style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                   &gt;_ {isAr ? 'Ø§Ù„Ø¢Ù„Ø© Ø§Ù„Ø­Ø§Ø³Ø¨Ø© Ø§Ù„Ø±Ø³ÙˆÙ…ÙŠØ©' : 'Graph Calculator'}
                 </span>
-                <span style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>// built-in Â· scroll=zoom Â· drag=pan</span>
+                <span style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>// built-in | scroll=zoom | drag=pan</span>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button onClick={() => setVp(DEFAULT_VP)} style={{ height: 26, padding: '0 10px', fontFamily: 'var(--font-mono)', fontSize: 10, background: 'rgba(88,166,255,0.07)', border: '1px solid var(--color-border)', color: 'var(--color-muted)', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
