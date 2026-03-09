@@ -52,10 +52,13 @@ function parseSteps(content: string): { label: string; body: string; color: stri
  *  \(...\)  →  $...$     (inline math)
  */
 function normalizeMath(text: string): string {
-  // display: \[...\]
-  text = text.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
-  // inline: \(...\)
-  text = text.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
+  // display: \[...\] → $$...$$
+  // Negative lookbehind (?<!\\) prevents matching \\[4pt] (LaTeX line-skip
+  // inside cases/aligned envs) which must NOT be converted.
+  // '$$$$' in replacement = two literal $ signs (JS replace special pattern: $$ → $)
+  text = text.replace(/(?<!\\)\\\[/g, '$$$$').replace(/(?<!\\)\\\]/g, '$$$$');
+  // inline: \(...\) → $...$
+  text = text.replace(/(?<!\\)\\\(/g, '$').replace(/(?<!\\)\\\)/g, '$');
   return text;
 }
 

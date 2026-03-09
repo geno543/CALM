@@ -404,6 +404,11 @@ MATH FORMATTING (strictly enforced):
 - Use $$...$$ for display/block equations.
 - NEVER use \\(...\\) or \\[...\\] — these are NOT supported by the renderer.
 - NEVER write raw LaTeX like (\\varepsilon) or [\\frac{{a}}{{b}}] outside of $ delimiters.
+- Inside \\begin{{cases}}, \\begin{{aligned}}, or any multi-line environment, use ONLY \\\\
+  as a line separator — NEVER \\\\[4pt] or any \\\\[length] spacing variant; the renderer
+  does not support optional spacing arguments on line breaks.
+- Piecewise functions are best written with \\begin{{cases}} inside $$...$$ like:
+  $$f(x) = \\begin{{cases}} -x & \\text{{if }} x < 0 \\\\ x^2 & \\text{{if }} 0 \\le x \\le 1 \\\\ 1 & \\text{{if }} x > 1 \\end{{cases}}$$
 
 Match the student's language: Arabic input → Arabic explanations with English math;
 English input → full English."""),
