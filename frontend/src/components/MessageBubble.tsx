@@ -39,10 +39,12 @@ function extractGraphableExprs(text: string): string[] {
     // LHS must look like  y=, f(x)=, g(x)=, h(x)=, P(x)=, r=, etc.
     if (!graphableLHS.test(s)) return false;
     // RHS must contain 'x' so it's actually a curve, not a constant assignment
-    const rhs = s.slice(s.indexOf('=') + 1);
+    const rhs = s.slice(s.indexOf('=') + 1).trim();
     if (!/x/.test(rhs)) return false;
     // RHS must not read like English prose
     if (proseWords.test(rhs)) return false;
+    // Reject abstract  y=f(x), y=g(x), y=h(x) — undefined function refs, not plottable
+    if (/^[a-zA-Z]\s*\(\s*x\s*\)\s*$/.test(rhs)) return false;
     return true;
   };
 
