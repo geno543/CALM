@@ -19,8 +19,13 @@ export function useStream() {
   }, []);
 
   const send = useCallback(async (text: string) => {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
+    // Get access token; try refreshing if the cached session is stale
+    let { data: sessionData } = await supabase.auth.getSession();
+    let token = sessionData.session?.access_token;
+    if (!token) {
+      const { data: refreshed } = await supabase.auth.refreshSession();
+      token = refreshed.session?.access_token;
+    }
     if (!token) return;
 
     // Abort any previous request
@@ -43,21 +48,34 @@ export function useStream() {
     // Open SSE connection via fetch (manual ReadableStream)
     let buffer = '';
 
+    // Inner function so we can retry once with a fresh token on 401
+    const doFetch = (t: string) => fetch(`${BACKEND}/chat/stream`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${t}`,
+        'Accept':        'text/event-stream',
+      },
+      body:   JSON.stringify({ message: text, learning_mode: learningMode }),
+      signal,
+    });
+
     try {
-      const res = await fetch(`${BACKEND}/chat/stream`, {
-        method:  'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept':        'text/event-stream',
-        },
-        body:   JSON.stringify({ message: text, learning_mode: learningMode }),
-        signal,
-      });
+      let res = await doFetch(token);
+
+      // 401: token may have just expired — try refreshing once before giving up
+      if (res.status === 401) {
+        const { data: refreshed, error: refreshErr } = await supabase.auth.refreshSession();
+        if (!refreshErr && refreshed.session?.access_token) {
+          token = refreshed.session.access_token;
+          res = await doFetch(token);
+        }
+      }
 
       if (!res.ok || !res.body) {
         clearStreaming();
         if (res.status === 401) {
+          // Refresh failed — session is truly dead, sign out gracefully
           await supabase.auth.signOut();
           return;
         }
