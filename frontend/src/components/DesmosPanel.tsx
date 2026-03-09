@@ -1,44 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore } from '../stores/chatStore';
 import { useLang }      from '../contexts/LanguageContext';
 
-// Desmos embed base URL — no API key needed
-const DESMOS_EMBED = 'https://www.desmos.com/calculator?embed';
+// Full interactive calculator  no API key needed, no ?embed (embed disables zoom/pan)
+const DESMOS_URL = 'https://www.desmos.com/calculator';
 
 export default function DesmosPanel() {
   const { desmosOpen, desmosExprs, closeDesmos } = useChatStore();
   const { isAr } = useLang();
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady]   = useState(false);
+  const [copied, setCopied] = useState<number | null>(null);
 
-  // When expressions are provided, post them into the iframe once it loads
-  useEffect(() => {
-    if (!desmosOpen) { setReady(false); return; }
-  }, [desmosOpen]);
-
-  const handleIframeLoad = () => {
-    setReady(true);
-    // Inject expressions via postMessage to the Desmos embed
-    if (desmosExprs.length > 0 && iframeRef.current?.contentWindow) {
-      desmosExprs.forEach((latex, i) => {
-        const cleaned = latex
-          .replace(/\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\}/g, '')
-          .replace(/\\\\/g, '')
-          .replace(/\\(label|tag|nonumber)\{[^}]*\}/g, '')
-          .trim();
-        if (!cleaned) return;
-        iframeRef.current!.contentWindow!.postMessage({
-          type:   'setExpression',
-          params: { id: `e${i}`, latex: cleaned },
-        }, 'https://www.desmos.com');
-      });
-    }
+  const handleCopy = (latex: string, idx: number) => {
+    navigator.clipboard.writeText(latex).then(() => {
+      setCopied(idx);
+      setTimeout(() => setCopied(null), 1500);
+    });
   };
 
-  const bodyH = typeof window !== 'undefined'
-    ? Math.max(360, Math.floor(window.innerHeight * 0.80) - 52)
-    : 480;
+  const exprPanelH = desmosExprs.length > 0 ? Math.min(desmosExprs.length * 36 + 44, 160) : 0;
+  const totalH     = typeof window !== 'undefined' ? Math.max(420, Math.floor(window.innerHeight * 0.82)) : 520;
+  const iframeH    = totalH - exprPanelH;
 
   return (
     <AnimatePresence>
@@ -73,7 +57,7 @@ export default function DesmosPanel() {
             {/* Header */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '0 20px', height: 50,
+              padding: '0 20px', height: 48,
               borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -81,34 +65,69 @@ export default function DesmosPanel() {
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                 </svg>
                 <span style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  &gt;_ {isAr ? 'الآلة الحاسبة الرسومية' : 'Graphing Calculator'}
+                  &gt;_ {isAr ? '????? ??????? ????????' : 'Graphing Calculator'}
                 </span>
                 <span style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>// Desmos</span>
-                {desmosExprs.length > 0 && (
-                  <span style={{ background: 'rgba(88,166,255,0.1)', border: '1px solid var(--color-primary)', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 900, textTransform: 'uppercase', padding: '1px 8px', letterSpacing: '0.08em' }}>
-                    {desmosExprs.length} {isAr ? 'تعبيرات' : desmosExprs.length === 1 ? 'expr' : 'exprs'}
-                  </span>
-                )}
                 {!ready && (
-                  <span style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>loading...</span>
+                  <span style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>loading...</span>
                 )}
               </div>
-              <button onClick={closeDesmos} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-border)', color: 'var(--color-muted)', background: 'transparent', cursor: 'pointer' }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <button
+                onClick={closeDesmos}
+                style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-border)', color: 'var(--color-muted)', background: 'transparent', cursor: 'pointer' }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6"  x2="6"  y2="18"/>
+                  <line x1="6"  y1="6"  x2="18" y2="18"/>
+                </svg>
               </button>
             </div>
 
-            {/* Desmos embed iframe — no API key required */}
+            {/* Detected expressions  click-to-copy, paste into Desmos expression list */}
+            {desmosExprs.length > 0 && (
+              <div style={{
+                height: exprPanelH,
+                borderBottom: '1px solid var(--color-border)',
+                background: 'var(--color-surface)',
+                overflowY: 'auto',
+                padding: '8px 16px',
+              }}>
+                <p style={{ color: 'var(--color-subtle)', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  // {isAr ? '???? ???? ???????  ????? ?? ????? Desmos' : 'click to copy  paste into the Desmos expression list'}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {desmosExprs.map((expr, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleCopy(expr, i)}
+                      title={expr}
+                      style={{
+                        fontFamily:   'var(--font-mono)',
+                        fontSize:     11,
+                        padding:      '4px 10px',
+                        background:   copied === i ? 'rgba(61,220,151,0.12)' : 'rgba(88,166,255,0.06)',
+                        border:       `1px solid ${copied === i ? 'var(--color-accent)' : 'var(--color-primary)'}`,
+                        color:        copied === i ? 'var(--color-accent)' : 'var(--color-primary)',
+                        cursor:       'pointer',
+                        maxWidth:     320,
+                        overflow:     'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace:   'nowrap',
+                      }}
+                    >
+                      {copied === i ? ' copied' : expr}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Full interactive Desmos calculator  zoom, pan, expression list all enabled */}
             <iframe
               ref={iframeRef}
-              src={DESMOS_EMBED}
-              onLoad={handleIframeLoad}
-              style={{
-                display: 'block',
-                width:   '100%',
-                height:  bodyH,
-                border:  'none',
-              }}
+              src={DESMOS_URL}
+              onLoad={() => setReady(true)}
+              style={{ display: 'block', width: '100%', height: iframeH, border: 'none' }}
               allow="fullscreen"
               title="Desmos Graphing Calculator"
             />
