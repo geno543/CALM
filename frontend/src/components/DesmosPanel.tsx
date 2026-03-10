@@ -39,18 +39,26 @@ function latexToMath(raw: string): string {
   // 9. trig / named functions
   s = s.replace(/\\(sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|asin|acos|atan|sinh|cosh|tanh|exp|ln|log)\b/g, '$1');
   s = s.replace(/\\abs\b/g, 'abs');
+  // 9b. ln -> log (mathjs uses log() for natural log, not ln)
+  s = s.replace(/\bln\b/g, 'log');
+  // 9c. bare trig without parens: sin x -> sin(x)
+  s = s.replace(/(sin|cos|tan|cot|sec|csc|sinh|cosh|tanh|log|sqrt)\s+([a-zA-Z0-9])/g, '$1($2)');
+  // 9d. bare absolute value |expr|
+  s = s.replace(/\|([^|]+)\|/g, 'abs($1)');
   // 10. constants
   s = s.replace(/\\pi\b/g, 'pi').replace(/\\infty\b/g, 'Infinity').replace(/\\e\b/g, 'e');
   // 11. operators
   s = s.replace(/\\cdot\b/g, '*').replace(/\\times\b/g, '*').replace(/\\div\b/g, '/');
   s = s.replace(/\\pm\b/g, '+');
+  // 11b. LaTeX spacing commands (\, \; \: \! etc.) not caught by letter-only regex
+  s = s.replace(/\\[,;:! ]/g, '');
   // 12. remove remaining \commands and stray braces
   s = s.replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '');
   // 13. implicit multiplication  2x -> 2*x
   s = s.replace(/(\d)([a-df-wyzA-Z(])/g, '$1*$2');
   s = s.replace(/\)\s*\(/g, ')*(').replace(/(\d)\s*\(/g, '$1*(');
-  // 14. strip trailing junk / dangling operators
-  s = s.replace(/[.,;:!?\\)\]]+$/, '').replace(/[+\-*/^]+$/, '');
+  // 14. strip trailing prose punctuation / dangling operators (NOT closing parens)
+  s = s.replace(/[.,;:!?]+$/, '').replace(/[+\-*/^]+$/, '');
   // 15. t -> x for motion functions
   if (!/x/.test(s) && /\bt\b/.test(s)) s = s.replace(/\bt\b/g, 'x');
   return s.trim();
