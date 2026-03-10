@@ -25,6 +25,8 @@ function isGraphable(latex: string): boolean {
   // RHS must reference x (or t for motion functions)
   if (!/[xt]/.test(rhs)) return false;
   if (proseWords.test(rhs)) return false;
+  // Reject incomplete expressions ending with a dangling operator
+  if (/[+\-*/^_\\]$/.test(rhs)) return false;
   // Reject abstract  y=f(x), y=g(x) — just a reference, no definition
   if (/^[a-zA-Z]\s*\(\s*[xt]\s*\)\s*$/.test(rhs)) return false;
   return true;

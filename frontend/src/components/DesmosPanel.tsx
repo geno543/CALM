@@ -15,27 +15,43 @@ const DEFAULT_VP: Viewport = { xMin: -10, xMax: 10, yMin: -7, yMax: 7 };
 // â”€â”€â”€ LaTeX â†’ mathjs-parseable string â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function latexToMath(raw: string): string {
   let s = raw;
+  // 0. strip LHS  f(x)= / y= etc.
   s = s.replace(/^[a-zA-Z_]\w*\s*(?:\([^)]*\))?\s*=\s*/, '');
-  s = s.replace(/\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g, '($1)/($2)');
-  s = s.replace(/\\sqrt\s*\{([^}]+)\}/g, 'sqrt($1)');
-  s = s.replace(/\\sqrt\s*\[([^\]]+)\]\s*\{([^}]+)\}/g, 'nthRoot($2,$1)');
-  s = s.replace(/\^\{([^}]+)\}/g, '^($1)');
-  s = s.replace(/_\{[^}]*\}/g, '').replace(/_[a-zA-Z0-9]/g, '');
+  // 1. normalise variant fracs (\dfrac, \tfrac -> \frac)
+  s = s.replace(/\\[dt]frac\b/g, '\\frac');
+  // 2. \left / \right  before nested brace processing
   s = s.replace(/\\left\s*\(/g, '(').replace(/\\right\s*\)/g, ')');
   s = s.replace(/\\left\s*\[/g, '(').replace(/\\right\s*\]/g, ')');
   s = s.replace(/\\left\s*\|/g, 'abs(').replace(/\\right\s*\|/g, ')');
   s = s.replace(/\\left\s*\{/g, '(').replace(/\\right\s*\}/g, ')');
+  // 3. subscripts (remove)
+  s = s.replace(/_\{[^}]*\}/g, '').replace(/_[a-zA-Z0-9]/g, '');
+  // 4. ^{...} -> ^(...)  MUST run BEFORE \sqrt/\frac
+  for (let i = 0; i < 4; i++) s = s.replace(/\^\{([^{}]*)\}/g, '^($1)');
+  // 5. \frac{a}{b} -- loop for nesting
+  for (let i = 0; i < 4; i++) s = s.replace(/\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '($1)/($2)');
+  // 6. \sqrt[n]{x}
+  s = s.replace(/\\sqrt\s*\[([^\]]+)\]\s*\{([^{}]*)\}/g, 'nthRoot($2,$1)');
+  // 7. \sqrt{x} -- loop for nesting
+  for (let i = 0; i < 3; i++) s = s.replace(/\\sqrt\s*\{([^{}]*)\}/g, 'sqrt($1)');
+  // 8. bare \sqrt
+  s = s.replace(/\\sqrt\b/g, 'sqrt');
+  // 9. trig / named functions
   s = s.replace(/\\(sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|asin|acos|atan|sinh|cosh|tanh|exp|ln|log)\b/g, '$1');
-  s = s.replace(/\\sqrt\b/g, 'sqrt').replace(/\\abs\b/g, 'abs');
-  s = s.replace(/\\pi\b/g, 'pi').replace(/\\infty\b/g, 'Infinity');
+  s = s.replace(/\\abs\b/g, 'abs');
+  // 10. constants
+  s = s.replace(/\\pi\b/g, 'pi').replace(/\\infty\b/g, 'Infinity').replace(/\\e\b/g, 'e');
+  // 11. operators
   s = s.replace(/\\cdot\b/g, '*').replace(/\\times\b/g, '*').replace(/\\div\b/g, '/');
   s = s.replace(/\\pm\b/g, '+');
+  // 12. remove remaining \commands and stray braces
   s = s.replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '');
-  s = s.replace(/(\d)([a-df-wyzA-Z])/g, '$1*$2');
+  // 13. implicit multiplication  2x -> 2*x
+  s = s.replace(/(\d)([a-df-wyzA-Z(])/g, '$1*$2');
   s = s.replace(/\)\s*\(/g, ')*(').replace(/(\d)\s*\(/g, '$1*(');
-  // strip trailing punctuation / LaTeX closers
-  s = s.replace(/[.,;:!?\\)\]]+$/, '');
-  // normalize motion-variable t → x so the canvas renderer (which uses x) works
+  // 14. strip trailing junk / dangling operators
+  s = s.replace(/[.,;:!?\\)\]]+$/, '').replace(/[+\-*/^]+$/, '');
+  // 15. t -> x for motion functions
   if (!/x/.test(s) && /\bt\b/.test(s)) s = s.replace(/\bt\b/g, 'x');
   return s.trim();
 }
