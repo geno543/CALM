@@ -19,6 +19,8 @@ function isGraphable(latex: string): boolean {
   if (!s.includes('=')) return false;
   // inline-math delimiters spliced from prose
   if (/\\[()\[\]]/.test(s)) return false;
+  // $ signs mean prose LaTeX leaked in (e.g. "g(x)=x+1$ evaluated at $x=-5$")
+  if (s.includes('$')) return false;
   if (nonGraphable.test(s)) return false;
   if (!graphableLHS.test(s)) return false;
   const rhs = s.slice(s.indexOf('=') + 1).trim();
